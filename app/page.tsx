@@ -147,7 +147,7 @@ export default function SasaTechHomepage() {
                       </div>
                       <div className="rounded-2xl border border-white/10 bg-zinc-950 p-4">
                         <div className="text-sm text-zinc-400">Contato</div>
-                        <div className="mt-1 font-medium text-white">WhatsApp, Insta, e-mail</div>
+                        <div className="mt-1 font-medium text-white">WhatsApp, Instagram e e-mail</div>
                       </div>
                     </div>
                     <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm leading-6 text-emerald-100">
@@ -285,7 +285,7 @@ export default function SasaTechHomepage() {
                 <a href="https://wa.me/5547999609562?text=Olá,%20quero%20um%20orçamento" className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10">
                   WhatsApp
                 </a>
-                <a href="https://instagram.com/sasatech" className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10">
+                <a href="https://instagram.com/sasa.tech" className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10">
                   Instagram
                 </a>
                 <a href="mailto:contato@sasatech.com.br" className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10">
@@ -298,7 +298,7 @@ export default function SasaTechHomepage() {
       </main>
 
       <footer className="border-t border-white/10 px-6 py-8 text-center text-sm text-zinc-500">
-        © 2026 SASA TECH • Joinville / SC
+        © 2026 SASA TECH • Joinville / SC • sasatech.com.br
       </footer>
     </div>
   );
