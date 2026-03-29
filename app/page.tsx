@@ -1,4 +1,19 @@
-import { AtSign, CheckCircle2, Cpu, HardDrive, Mail, MapPin, MessageCircle, ShieldCheck, Sparkles, Wrench } from "lucide-react";
+"use client";
+
+import { useMemo, useState } from "react";
+import {
+  AtSign,
+  CheckCircle2,
+  Cpu,
+  HardDrive,
+  Mail,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 
 export default function SasaTechHomepage() {
@@ -6,7 +21,7 @@ export default function SasaTechHomepage() {
     {
       title: "Formatação",
       description:
-        "Instalação limpa do sistema ou otimizada, configuração inicial e organização para devolver mais leveza ao computador.",
+        "Instalação limpa ou otimizada do sistema, configuração inicial e organização para devolver mais leveza ao computador.",
       icon: HardDrive,
     },
     {
@@ -24,17 +39,17 @@ export default function SasaTechHomepage() {
     {
       title: "Upgrades",
       description:
-        "Indicação e troca de componentes como: armazenamento, memória, processador e placa de vídeo. Para deixar o sistema muito mais rápido e responsivo.",
+        "Indicação e troca de componentes como armazenamento, memória e processador para deixar o sistema muito mais rápido.",
       icon: Wrench,
     },
     {
       title: "Montagem de PCs",
       description:
-        "Montagem completa para trabalho, estudos ou jogos, com organização, compatibilidade e performance.",
+        "Montagem completa com foco em desempenho, organização e compatibilidade.",
       icon: ShieldCheck,
     },
     {
-      title: "Backup e instalação de programas",
+      title: "Backup e programas",
       description:
         "Proteção dos seus arquivos e instalação dos softwares essenciais para o dia a dia.",
       icon: CheckCircle2,
@@ -43,15 +58,15 @@ export default function SasaTechHomepage() {
 
   const steps = [
     "Você entra em contato pelo WhatsApp, Instagram ou e-mail.",
-    "Eu entendo o problema e explico a melhor solução de forma simples.",
-    "Passo o orçamento antes de iniciar o serviço.",
-    "Executo o atendimento com cuidado, clareza e organização.",
+    "Eu entendo o problema e explico a melhor solução.",
+    "Passo o orçamento antes de iniciar.",
+    "Executo o serviço com cuidado e organização.",
   ];
 
   const faqs = [
     {
       q: "Quais serviços a SASA TECH faz?",
-      a: "Formatação, limpeza interna, troca de pasta térmica, upgrade, montagem de PCs, backup e instalação de programas.",
+      a: "Formatação, limpeza interna, troca de pasta térmica, upgrades, montagem de PCs, backup e instalação de programas.",
     },
     {
       q: "Você atende em Joinville?",
@@ -59,7 +74,7 @@ export default function SasaTechHomepage() {
     },
     {
       q: "Como funciona o orçamento?",
-      a: "O objetivo é sempre deixar claro o que será feito sem compromisso financeiro algum antes de começar qualquer procedimento.",
+      a: "Você informa o serviço e o problema, eu avalio o cenário e explico o que será feito antes de qualquer procedimento.",
     },
     {
       q: "Atende notebook e PC?",
@@ -68,15 +83,52 @@ export default function SasaTechHomepage() {
   ];
 
   const contactLinks = {
-    whatsapp: "https://wa.me/5547999609562?text=Olá,%20quero%20um%20orçamento",
+    whatsappBase: "5547999609562",
     instagram: "https://instagram.com/sasa.tech",
     email: "mailto:contato@sasatech.com.br",
   };
 
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    whatsapp: "",
+    service: "Formatação",
+    equipment: "Notebook",
+    urgency: "Normal",
+    neighborhood: "",
+    details: "",
+  });
+
+  const whatsappHref = useMemo(() => {
+    const message = [
+      "Olá, quero solicitar um orçamento pela SASA TECH.",
+      "",
+      `Nome: ${form.name || "Não informado"}`,
+      `WhatsApp: ${form.whatsapp || "Não informado"}`,
+      `Serviço desejado: ${form.service}`,
+      `Equipamento: ${form.equipment}`,
+      `Urgência: ${form.urgency}`,
+      `Bairro/Região: ${form.neighborhood || "Não informado"}`,
+      `Detalhes do problema: ${form.details || "Não informado"}`,
+    ].join("\n");
+
+    return `https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent(message)}`;
+  }, [form]);
+
+  function updateForm(field: keyof typeof form, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleQuoteSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    window.open(whatsappHref, "_blank", "noopener,noreferrer");
+    setIsQuoteOpen(false);
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-emerald-400 selection:text-zinc-950">
       <a
-        href={contactLinks.whatsapp}
+        href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent("Olá, quero solicitar um orçamento.")}`}
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-3 rounded-full border border-emerald-400/30 bg-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 shadow-2xl shadow-emerald-950/40 transition hover:scale-[1.02]"
@@ -84,6 +136,146 @@ export default function SasaTechHomepage() {
         <MessageCircle className="h-5 w-5" />
         WhatsApp
       </a>
+
+      {isQuoteOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-[2rem] border border-white/10 bg-zinc-950 p-6 shadow-2xl shadow-black/40 md:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <div className="font-[var(--font-space)] text-2xl font-semibold text-white md:text-3xl">
+                  Solicitar orçamento
+                </div>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  Preencha os dados abaixo. Ao enviar, o WhatsApp já abre com a mensagem pronta e personalizada.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsQuoteOpen(false)}
+                className="rounded-full border border-white/10 p-2 text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                aria-label="Fechar"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuoteSubmit} className="space-y-5">
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-sm text-zinc-300">Seu nome</span>
+                  <input
+                    value={form.name}
+                    onChange={(e) => updateForm("name", e.target.value)}
+                    required
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                    placeholder="Ex.: Matheus"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm text-zinc-300">Seu WhatsApp</span>
+                  <input
+                    value={form.whatsapp}
+                    onChange={(e) => updateForm("whatsapp", e.target.value)}
+                    required
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                    placeholder="Ex.: 47 99999-9999"
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <label className="block md:col-span-1">
+                  <span className="mb-2 block text-sm text-zinc-300">Serviço</span>
+                  <select
+                    value={form.service}
+                    onChange={(e) => updateForm("service", e.target.value)}
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/40"
+                  >
+                    {services.map((service) => (
+                      <option key={service.title} value={service.title} className="bg-zinc-900">
+                        {service.title}
+                      </option>
+                    ))}
+                    <option value="Diagnóstico" className="bg-zinc-900">Diagnóstico</option>
+                    <option value="Outro" className="bg-zinc-900">Outro</option>
+                  </select>
+                </label>
+
+                <label className="block md:col-span-1">
+                  <span className="mb-2 block text-sm text-zinc-300">Equipamento</span>
+                  <select
+                    value={form.equipment}
+                    onChange={(e) => updateForm("equipment", e.target.value)}
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/40"
+                  >
+                    <option value="Notebook" className="bg-zinc-900">Notebook</option>
+                    <option value="PC" className="bg-zinc-900">PC</option>
+                    <option value="PC Gamer" className="bg-zinc-900">PC Gamer</option>
+                    <option value="Não sei informar" className="bg-zinc-900">Não sei informar</option>
+                  </select>
+                </label>
+
+                <label className="block md:col-span-1">
+                  <span className="mb-2 block text-sm text-zinc-300">Urgência</span>
+                  <select
+                    value={form.urgency}
+                    onChange={(e) => updateForm("urgency", e.target.value)}
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/40"
+                  >
+                    <option value="Normal" className="bg-zinc-900">Normal</option>
+                    <option value="Urgente" className="bg-zinc-900">Urgente</option>
+                    <option value="Posso aguardar" className="bg-zinc-900">Posso aguardar</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-1">
+                <label className="block">
+                  <span className="mb-2 block text-sm text-zinc-300">Bairro ou região</span>
+                  <input
+                    value={form.neighborhood}
+                    onChange={(e) => updateForm("neighborhood", e.target.value)}
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                    placeholder="Ex.: Centro, América, Joinville/SC"
+                  />
+                </label>
+              </div>
+
+              <label className="block">
+                <span className="mb-2 block text-sm text-zinc-300">Explique o problema ou o que você precisa</span>
+                <textarea
+                  value={form.details}
+                  onChange={(e) => updateForm("details", e.target.value)}
+                  rows={5}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                  placeholder="Ex.: notebook muito lento, preciso formatar e instalar programas; quero upgrade para SSD; preciso montar um PC completo..."
+                />
+              </label>
+
+              <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm leading-6 text-emerald-100">
+                A mensagem será enviada para o WhatsApp da SASA TECH já com seus dados preenchidos.
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsQuoteOpen(false)}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+                >
+                  Fechar
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:opacity-90"
+                >
+                  Enviar para WhatsApp
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -96,7 +288,7 @@ export default function SasaTechHomepage() {
               className="h-11 w-11 object-contain transition group-hover:opacity-80"
             />
             <div className="flex flex-col leading-tight">
-              <span className="text-sm font-semibold tracking-[0.22em] text-emerald-400 transition group-hover:text-emerald-300">
+              <span className="font-[var(--font-space)] text-sm font-semibold tracking-[0.22em] text-emerald-400 transition group-hover:text-emerald-300">
                 SASA TECH
               </span>
               <span className="text-xs text-zinc-400">Joinville • SC</span>
@@ -111,14 +303,13 @@ export default function SasaTechHomepage() {
             <a href="#contato" className="transition hover:text-white">Contato</a>
           </nav>
 
-          <a
-            href={contactLinks.whatsapp}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            onClick={() => setIsQuoteOpen(true)}
             className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/20"
           >
             Solicitar orçamento
-          </a>
+          </button>
         </div>
       </header>
 
@@ -133,7 +324,7 @@ export default function SasaTechHomepage() {
                 Atendimento local • Joinville/SC
               </div>
 
-              <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-white md:text-6xl">
+              <h1 className="font-[var(--font-space)] max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-white md:text-6xl">
                 Manutenção e suporte de TI com visual profissional e atendimento <span className="text-emerald-400">rápido, claro e confiável</span>.
               </h1>
 
@@ -142,14 +333,13 @@ export default function SasaTechHomepage() {
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href={contactLinks.whatsapp}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={() => setIsQuoteOpen(true)}
                   className="rounded-2xl bg-emerald-400 px-6 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:opacity-90"
                 >
                   Solicitar orçamento
-                </a>
+                </button>
                 <a
                   href="#servicos"
                   className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/10"
@@ -227,7 +417,7 @@ export default function SasaTechHomepage() {
               },
             ].map((item) => (
               <div key={item.title} className="rounded-[1.5rem] border border-white/10 bg-zinc-900/70 p-5">
-                <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                <h3 className="font-[var(--font-space)] text-lg font-semibold text-white">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-zinc-400">{item.text}</p>
               </div>
             ))}
@@ -239,7 +429,7 @@ export default function SasaTechHomepage() {
             <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
               Serviços
             </div>
-            <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
+            <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
               Soluções para quem quer o computador funcionando bem de novo.
             </h2>
             <p className="mt-4 text-zinc-400">
@@ -258,7 +448,7 @@ export default function SasaTechHomepage() {
                   <div className="mb-5 inline-flex rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-3 text-emerald-300">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">{service.title}</h3>
+                  <h3 className="font-[var(--font-space)] text-xl font-semibold text-white">{service.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-zinc-400">{service.description}</p>
                 </div>
               );
@@ -272,7 +462,7 @@ export default function SasaTechHomepage() {
               <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
                 Como funciona
               </div>
-              <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
+              <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
                 Processo simples, direto e profissional.
               </h2>
             </div>
@@ -296,25 +486,25 @@ export default function SasaTechHomepage() {
               <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
                 Sobre a SASA TECH
               </div>
-              <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
+              <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
                 Atendimento de TI com presença premium e comunicação simples.
               </h2>
               <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300">
                 Trabalho com manutenção e montagem de computadores com foco em atendimento honesto, rápido e profissional. A SASA TECH foi pensada para transmitir confiança logo no primeiro contato, com linguagem clara e foco em resultado.
               </p>
               <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-400">
-                 
+                O objetivo é oferecer um serviço de TI confiável, com atendimento direto, orçamento claro e soluções pensadas para quem quer praticidade no dia a dia.
               </p>
             </div>
 
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
-              <h3 className="text-xl font-semibold text-white">Diferenciais</h3>
+              <h3 className="font-[var(--font-space)] text-xl font-semibold text-white">Diferenciais</h3>
               <div className="mt-6 space-y-4 text-sm leading-6 text-zinc-300">
                 {[
                   "Explicação clara, sem linguagem complicada",
                   "Orçamento antes de executar o serviço",
-                  "Atendimento AJUSTAR ESSE TEXTO",
-                  "Busca e entrega seu PC",
+                  "Atendimento local com resposta rápida",
+                  "Busca e entrega do PC, quando combinado",
                 ].map((item) => (
                   <div key={item} className="rounded-2xl border border-white/10 bg-zinc-900 p-4">
                     {item}
@@ -331,7 +521,7 @@ export default function SasaTechHomepage() {
               <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
                 Perguntas frequentes
               </div>
-              <h2 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
+              <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
                 Dúvidas que o cliente costuma ter antes de chamar.
               </h2>
             </div>
@@ -339,7 +529,7 @@ export default function SasaTechHomepage() {
             <div className="grid gap-5 md:grid-cols-2">
               {faqs.map((item) => (
                 <div key={item.q} className="rounded-[1.75rem] border border-white/10 bg-zinc-900 p-6">
-                  <h3 className="text-lg font-semibold text-white">{item.q}</h3>
+                  <h3 className="font-[var(--font-space)] text-lg font-semibold text-white">{item.q}</h3>
                   <p className="mt-3 text-sm leading-6 text-zinc-400">{item.a}</p>
                 </div>
               ))}
@@ -354,7 +544,7 @@ export default function SasaTechHomepage() {
                 <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-300">
                   Contato
                 </div>
-                <h2 className="mt-3 text-3xl font-semibold text-white md:text-5xl">
+                <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-5xl">
                   Pronto para transformar visita em orçamento.
                 </h2>
                 <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-200">
@@ -364,7 +554,7 @@ export default function SasaTechHomepage() {
 
               <div className="space-y-4 rounded-[1.75rem] border border-white/10 bg-zinc-950/70 p-6">
                 <a
-                  href={contactLinks.whatsapp}
+                  href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent("Olá, quero solicitar um orçamento.")}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10"
