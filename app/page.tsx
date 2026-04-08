@@ -140,9 +140,9 @@ export default function SasaTechHomepage() {
       </a>
 
       {isQuoteOpen && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto bg-black/70 px-3 py-4 backdrop-blur-sm md:flex md:items-center md:justify-center md:px-4">
-          <div className="w-full max-w-lg rounded-[1.5rem] border border-white/10 bg-zinc-950 p-4 shadow-2xl shadow-black/40 md:max-w-2xl md:rounded-[2rem] md:p-8">
-            <div className="mb-5 flex items-start justify-between gap-4 md:mb-6">
+        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm md:flex md:items-center md:justify-center md:px-4">
+          <div className="h-[100dvh] w-full overflow-y-auto border-x border-white/10 bg-zinc-950 px-4 pb-8 pt-5 shadow-2xl shadow-black/40 md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-[2rem] md:border md:px-8 md:pb-8 md:pt-6">
+            <div className="sticky top-0 z-10 mb-5 flex items-start justify-between gap-4 border-b border-white/10 bg-zinc-950 pb-4 md:static md:border-b-0 md:bg-transparent md:pb-0">
               <div>
                 <div className="font-[var(--font-space)] text-xl font-semibold text-white md:text-3xl">
                   Solicitar orçamento
@@ -162,7 +162,7 @@ export default function SasaTechHomepage() {
               </button>
             </div>
 
-            <form onSubmit={handleQuoteSubmit} className="space-y-4 md:space-y-5">
+            <form onSubmit={handleQuoteSubmit} className="space-y-4 pb-6 md:space-y-5 md:pb-0">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
                   <span className="mb-2 block text-sm text-zinc-300">
@@ -284,8 +284,8 @@ export default function SasaTechHomepage() {
                 <textarea
                   value={form.details}
                   onChange={(e) => updateForm("details", e.target.value)}
-                  rows={4}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                  rows={3}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40 md:py-3"
                   placeholder="Ex.: notebook muito lento, preciso formatar e instalar programas; quero upgrade para SSD; preciso montar um PC completo..."
                 />
               </label>
@@ -356,7 +356,7 @@ export default function SasaTechHomepage() {
           <button
             type="button"
             onClick={() => setIsQuoteOpen(true)}
-            className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
+            className="cursor-pointer rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
           >
             Solicitar orçamento
           </button>
@@ -392,13 +392,13 @@ export default function SasaTechHomepage() {
                 <button
                   type="button"
                   onClick={() => setIsQuoteOpen(true)}
-                  className="rounded-2xl bg-emerald-400 px-5 py-2.5 text-center text-sm font-semibold text-zinc-950 transition hover:opacity-90 md:px-6 md:py-3"
+                  className="cursor-pointer rounded-2xl bg-emerald-400 px-5 py-2.5 text-center text-sm font-semibold text-zinc-950 transition hover:opacity-90 md:px-6 md:py-3"
                 >
                   Solicitar orçamento
                 </button>
                 <a
                   href="#servicos"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-white/10 md:px-6 md:py-3"
+                  className="cursor-pointer rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-white/10 md:px-6 md:py-3"
                 >
                   Ver serviços
                 </a>
