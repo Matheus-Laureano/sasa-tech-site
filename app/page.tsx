@@ -128,25 +128,28 @@ export default function SasaTechHomepage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-emerald-400 selection:text-zinc-950">
       <a
-        href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent("Olá, quero solicitar um orçamento.")}`}
+        href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent(
+          "Olá, quero solicitar um orçamento."
+        )}`}
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-3 rounded-full border border-emerald-400/30 bg-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 shadow-2xl shadow-emerald-950/40 transition hover:scale-[1.02]"
+        className="fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-zinc-950 shadow-2xl shadow-emerald-950/40 transition hover:scale-[1.02] md:bottom-5 md:right-5 md:gap-3 md:px-5 md:py-3"
       >
         <MessageCircle className="h-5 w-5" />
         WhatsApp
       </a>
 
       {isQuoteOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-[2rem] border border-white/10 bg-zinc-950 p-6 shadow-2xl shadow-black/40 md:p-8">
-            <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="fixed inset-0 z-[60] overflow-y-auto bg-black/70 px-3 py-4 backdrop-blur-sm md:flex md:items-center md:justify-center md:px-4">
+          <div className="w-full max-w-lg rounded-[1.5rem] border border-white/10 bg-zinc-950 p-4 shadow-2xl shadow-black/40 md:max-w-2xl md:rounded-[2rem] md:p-8">
+            <div className="mb-5 flex items-start justify-between gap-4 md:mb-6">
               <div>
-                <div className="font-[var(--font-space)] text-2xl font-semibold text-white md:text-3xl">
+                <div className="font-[var(--font-space)] text-xl font-semibold text-white md:text-3xl">
                   Solicitar orçamento
                 </div>
                 <p className="mt-2 text-sm leading-6 text-zinc-400">
-                  Preencha os dados abaixo. Ao enviar, o WhatsApp já abre com a mensagem pronta e personalizada.
+                  Preencha os dados abaixo. Ao enviar, o WhatsApp já abre com a
+                  mensagem pronta e personalizada.
                 </p>
               </div>
               <button
@@ -159,102 +162,137 @@ export default function SasaTechHomepage() {
               </button>
             </div>
 
-            <form onSubmit={handleQuoteSubmit} className="space-y-5">
+            <form onSubmit={handleQuoteSubmit} className="space-y-4 md:space-y-5">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-sm text-zinc-300">Seu nome</span>
+                  <span className="mb-2 block text-sm text-zinc-300">
+                    Seu nome
+                  </span>
                   <input
                     value={form.name}
                     onChange={(e) => updateForm("name", e.target.value)}
                     required
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40 md:py-3"
                     placeholder="Ex.: Matheus"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-sm text-zinc-300">Seu WhatsApp</span>
+                  <span className="mb-2 block text-sm text-zinc-300">
+                    Seu WhatsApp
+                  </span>
                   <input
                     value={form.whatsapp}
                     onChange={(e) => updateForm("whatsapp", e.target.value)}
                     required
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40 md:py-3"
                     placeholder="Ex.: 47 99999-9999"
                   />
                 </label>
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
-                <label className="block md:col-span-1">
-                  <span className="mb-2 block text-sm text-zinc-300">Serviço</span>
+                <label className="block">
+                  <span className="mb-2 block text-sm text-zinc-300">
+                    Serviço
+                  </span>
                   <select
                     value={form.service}
                     onChange={(e) => updateForm("service", e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/40"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-emerald-400/40 md:py-3"
                   >
                     {services.map((service) => (
-                      <option key={service.title} value={service.title} className="bg-zinc-900">
+                      <option
+                        key={service.title}
+                        value={service.title}
+                        className="bg-zinc-900"
+                      >
                         {service.title}
                       </option>
                     ))}
-                    <option value="Diagnóstico" className="bg-zinc-900">Diagnóstico</option>
-                    <option value="Outro" className="bg-zinc-900">Outro</option>
+                    <option value="Diagnóstico" className="bg-zinc-900">
+                      Diagnóstico
+                    </option>
+                    <option value="Outro" className="bg-zinc-900">
+                      Outro
+                    </option>
                   </select>
                 </label>
 
-                <label className="block md:col-span-1">
-                  <span className="mb-2 block text-sm text-zinc-300">Equipamento</span>
+                <label className="block">
+                  <span className="mb-2 block text-sm text-zinc-300">
+                    Equipamento
+                  </span>
                   <select
                     value={form.equipment}
                     onChange={(e) => updateForm("equipment", e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/40"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-emerald-400/40 md:py-3"
                   >
-                    <option value="Notebook" className="bg-zinc-900">Notebook</option>
-                    <option value="PC" className="bg-zinc-900">PC</option>
-                    <option value="PC Gamer" className="bg-zinc-900">PC Gamer</option>
-                    <option value="Não sei informar" className="bg-zinc-900">Não sei informar</option>
+                    <option value="Notebook" className="bg-zinc-900">
+                      Notebook
+                    </option>
+                    <option value="PC" className="bg-zinc-900">
+                      PC
+                    </option>
+                    <option value="PC Gamer" className="bg-zinc-900">
+                      PC Gamer
+                    </option>
+                    <option value="Não sei informar" className="bg-zinc-900">
+                      Não sei informar
+                    </option>
                   </select>
                 </label>
 
-                <label className="block md:col-span-1">
-                  <span className="mb-2 block text-sm text-zinc-300">Urgência</span>
+                <label className="block">
+                  <span className="mb-2 block text-sm text-zinc-300">
+                    Urgência
+                  </span>
                   <select
                     value={form.urgency}
                     onChange={(e) => updateForm("urgency", e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/40"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-emerald-400/40 md:py-3"
                   >
-                    <option value="Normal" className="bg-zinc-900">Normal</option>
-                    <option value="Urgente" className="bg-zinc-900">Urgente</option>
-                    <option value="Posso aguardar" className="bg-zinc-900">Posso aguardar</option>
+                    <option value="Normal" className="bg-zinc-900">
+                      Normal
+                    </option>
+                    <option value="Urgente" className="bg-zinc-900">
+                      Urgente
+                    </option>
+                    <option value="Posso aguardar" className="bg-zinc-900">
+                      Posso aguardar
+                    </option>
                   </select>
-                </label>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-1">
-                <label className="block">
-                  <span className="mb-2 block text-sm text-zinc-300">Bairro ou região</span>
-                  <input
-                    value={form.neighborhood}
-                    onChange={(e) => updateForm("neighborhood", e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
-                    placeholder="Ex.: Centro, América, Joinville/SC"
-                  />
                 </label>
               </div>
 
               <label className="block">
-                <span className="mb-2 block text-sm text-zinc-300">Explique o problema ou o que você precisa</span>
+                <span className="mb-2 block text-sm text-zinc-300">
+                  Bairro ou região
+                </span>
+                <input
+                  value={form.neighborhood}
+                  onChange={(e) => updateForm("neighborhood", e.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40 md:py-3"
+                  placeholder="Ex.: Centro, América, Joinville/SC"
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm text-zinc-300">
+                  Explique o problema ou o que você precisa
+                </span>
                 <textarea
                   value={form.details}
                   onChange={(e) => updateForm("details", e.target.value)}
-                  rows={5}
+                  rows={4}
                   className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-emerald-400/40"
                   placeholder="Ex.: notebook muito lento, preciso formatar e instalar programas; quero upgrade para SSD; preciso montar um PC completo..."
                 />
               </label>
 
               <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm leading-6 text-emerald-100">
-                A mensagem será enviada para o WhatsApp da SASA TECH já com seus dados preenchidos.
+                A mensagem será enviada para o WhatsApp da SASA TECH já com seus
+                dados preenchidos.
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -278,35 +316,47 @@ export default function SasaTechHomepage() {
       )}
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6 md:py-4">
           <a href="#inicio" className="group flex items-center gap-3">
             <Image
               src="/logo.png"
               alt="SASA TECH"
               width={44}
               height={44}
-              className="h-11 w-11 object-contain transition group-hover:opacity-80"
+              className="h-9 w-9 object-contain transition group-hover:opacity-80 md:h-11 md:w-11"
             />
             <div className="flex flex-col leading-tight">
-              <span className="font-[var(--font-space)] text-sm font-semibold tracking-[0.22em] text-emerald-400 transition group-hover:text-emerald-300">
+              <span className="font-[var(--font-space)] text-xs font-semibold tracking-[0.18em] text-emerald-400 transition group-hover:text-emerald-300 md:text-sm md:tracking-[0.22em]">
                 SASA TECH
               </span>
-              <span className="text-xs text-zinc-400">Joinville • SC</span>
+              <span className="text-[11px] text-zinc-400 md:text-xs">
+                Joinville • SC
+              </span>
             </div>
           </a>
 
           <nav className="hidden gap-6 text-sm text-zinc-300 md:flex">
-            <a href="#servicos" className="transition hover:text-white">Serviços</a>
-            <a href="#como-funciona" className="transition hover:text-white">Como funciona</a>
-            <a href="#sobre" className="transition hover:text-white">Sobre</a>
-            <a href="#faq" className="transition hover:text-white">FAQ</a>
-            <a href="#contato" className="transition hover:text-white">Contato</a>
+            <a href="#servicos" className="transition hover:text-white">
+              Serviços
+            </a>
+            <a href="#como-funciona" className="transition hover:text-white">
+              Como funciona
+            </a>
+            <a href="#sobre" className="transition hover:text-white">
+              Sobre
+            </a>
+            <a href="#faq" className="transition hover:text-white">
+              FAQ
+            </a>
+            <a href="#contato" className="transition hover:text-white">
+              Contato
+            </a>
           </nav>
 
           <button
             type="button"
             onClick={() => setIsQuoteOpen(true)}
-            className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/20"
+            className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
           >
             Solicitar orçamento
           </button>
@@ -318,31 +368,37 @@ export default function SasaTechHomepage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.18),transparent_28%),radial-gradient(circle_at_left,rgba(16,185,129,0.10),transparent_25%)]" />
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
 
-          <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 md:py-28">
+          <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-2 md:px-6 md:py-28">
             <div className="flex flex-col justify-center">
-              <div className="mb-4 inline-flex w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300">
+              <div className="mb-4 inline-flex w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-zinc-300 md:text-xs">
                 Atendimento local • Joinville/SC
               </div>
 
-              <h1 className="font-[var(--font-space)] max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-white md:text-6xl">
-                Manutenção e suporte de TI com visual profissional e atendimento <span className="text-emerald-400">rápido, claro e confiável</span>.
+              <h1 className="font-[var(--font-space)] max-w-2xl text-3xl font-semibold leading-tight tracking-tight text-white md:text-6xl">
+                Manutenção e suporte de TI com atendimento{" "}
+                <span className="text-emerald-400">
+                  rápido, claro e confiável
+                </span>
+                .
               </h1>
 
-              <p className="mt-6 max-w-xl text-base leading-7 text-zinc-300 md:text-lg">
-                Formatação, limpeza, montagem, upgrade, backup e suporte técnico para computadores e notebooks em Joinville. Sem enrolação, com orçamento antes do serviço e contato direto.
+              <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-300 md:mt-6 md:text-lg">
+                Formatação, limpeza, montagem, upgrade, backup e suporte técnico
+                para computadores e notebooks em Joinville. Sem enrolação, com
+                orçamento antes do serviço e contato direto.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => setIsQuoteOpen(true)}
-                  className="rounded-2xl bg-emerald-400 px-6 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:opacity-90"
+                  className="rounded-2xl bg-emerald-400 px-5 py-2.5 text-center text-sm font-semibold text-zinc-950 transition hover:opacity-90 md:px-6 md:py-3"
                 >
                   Solicitar orçamento
                 </button>
                 <a
                   href="#servicos"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/10"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-white/10 md:px-6 md:py-3"
                 >
                   Ver serviços
                 </a>
@@ -354,7 +410,10 @@ export default function SasaTechHomepage() {
                   "Orçamento antes do serviço",
                   "Suporte direto e claro",
                 ].map((item) => (
-                  <div key={item} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-300">
+                  <div
+                    key={item}
+                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-300"
+                  >
                     {item}
                   </div>
                 ))}
@@ -362,36 +421,44 @@ export default function SasaTechHomepage() {
             </div>
 
             <div className="flex items-center justify-center">
-              <div className="w-full max-w-xl rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30">
-                <div className="rounded-[1.5rem] border border-emerald-400/20 bg-zinc-900 p-8">
-                  <div className="mb-8 flex items-center gap-3">
+              <div className="w-full max-w-xl rounded-[1.5rem] border border-white/10 bg-white/5 p-5 shadow-2xl shadow-black/30 md:rounded-[2rem] md:p-6">
+                <div className="rounded-[1.25rem] border border-emerald-400/20 bg-zinc-900 p-5 md:rounded-[1.5rem] md:p-8">
+                  <div className="mb-6 flex items-center gap-3 md:mb-8">
                     <div className="h-3 w-3 rounded-full bg-emerald-400" />
                     <div className="h-3 w-3 rounded-full bg-white/30" />
                     <div className="h-3 w-3 rounded-full bg-white/15" />
                   </div>
 
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-white/10 bg-zinc-950 p-5">
+                    <div className="rounded-2xl border border-white/10 bg-zinc-950 p-4 md:p-5">
                       <div className="text-sm text-zinc-400">Atendimento</div>
-                      <div className="mt-1 flex items-center gap-2 text-xl font-semibold text-white">
+                      <div className="mt-1 flex items-center gap-2 text-lg font-semibold text-white md:text-xl">
                         <MapPin className="h-5 w-5 text-emerald-400" />
                         Joinville / SC
                       </div>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-white/10 bg-zinc-950 p-5">
-                        <div className="text-sm text-zinc-400">Contato rápido</div>
-                        <div className="mt-1 font-medium text-white">WhatsApp direto</div>
+                      <div className="rounded-2xl border border-white/10 bg-zinc-950 p-4 md:p-5">
+                        <div className="text-sm text-zinc-400">
+                          Contato rápido
+                        </div>
+                        <div className="mt-1 font-medium text-white">
+                          WhatsApp direto
+                        </div>
                       </div>
-                      <div className="rounded-2xl border border-white/10 bg-zinc-950 p-5">
+                      <div className="rounded-2xl border border-white/10 bg-zinc-950 p-4 md:p-5">
                         <div className="text-sm text-zinc-400">Foco</div>
-                        <div className="mt-1 font-medium text-white">Rapidez + confiança</div>
+                        <div className="mt-1 font-medium text-white">
+                          Rapidez + confiança
+                        </div>
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-5 text-sm leading-6 text-emerald-100">
-                      Ideal para clientes que querem resolver lentidão, aquecimento, upgrade ou montagem sem cair em atendimento genérico.
+                    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm leading-6 text-emerald-100 md:p-5">
+                      Ideal para clientes que querem resolver lentidão,
+                      aquecimento, upgrade ou montagem sem cair em atendimento
+                      genérico.
                     </div>
                   </div>
                 </div>
@@ -400,8 +467,8 @@ export default function SasaTechHomepage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 pb-4">
-          <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 md:grid-cols-3">
+        <section className="mx-auto max-w-7xl px-4 pb-4 md:px-6">
+          <div className="grid gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5 md:rounded-[2rem] md:p-6 md:grid-cols-3">
             {[
               {
                 title: "Atendimento honesto",
@@ -416,24 +483,32 @@ export default function SasaTechHomepage() {
                 text: "WhatsApp, Instagram e e-mail posicionados para converter visita em orçamento.",
               },
             ].map((item) => (
-              <div key={item.title} className="rounded-[1.5rem] border border-white/10 bg-zinc-900/70 p-5">
-                <h3 className="font-[var(--font-space)] text-lg font-semibold text-white">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-400">{item.text}</p>
+              <div
+                key={item.title}
+                className="rounded-[1.25rem] border border-white/10 bg-zinc-900/70 p-5 md:rounded-[1.5rem]"
+              >
+                <h3 className="font-[var(--font-space)] text-lg font-semibold text-white">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  {item.text}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
-        <section id="servicos" className="mx-auto max-w-7xl px-6 py-20">
-          <div className="mb-12 max-w-2xl">
+        <section id="servicos" className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+          <div className="mb-10 max-w-2xl md:mb-12">
             <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
               Serviços
             </div>
-            <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+            <h2 className="font-[var(--font-space)] mt-3 text-2xl font-semibold tracking-tight text-white md:text-4xl">
               Soluções para quem quer o computador funcionando bem de novo.
             </h2>
-            <p className="mt-4 text-zinc-400">
-              Estrutura pensada para deixar claro, logo na primeira visita, o que a SASA TECH faz e como entrar em contato.
+            <p className="mt-4 text-sm leading-7 text-zinc-400 md:text-base">
+              Estrutura pensada para deixar claro, logo na primeira visita, o
+              que a SASA TECH faz e como entrar em contato.
             </p>
           </div>
 
@@ -443,13 +518,17 @@ export default function SasaTechHomepage() {
               return (
                 <div
                   key={service.title}
-                  className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.07]"
+                  className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.07] md:rounded-[1.75rem] md:p-6"
                 >
                   <div className="mb-5 inline-flex rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-3 text-emerald-300">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="font-[var(--font-space)] text-xl font-semibold text-white">{service.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-zinc-400">{service.description}</p>
+                  <h3 className="font-[var(--font-space)] text-xl font-semibold text-white">
+                    {service.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-400">
+                    {service.description}
+                  </p>
                 </div>
               );
             })}
@@ -457,19 +536,22 @@ export default function SasaTechHomepage() {
         </section>
 
         <section id="como-funciona" className="border-y border-white/10 bg-white/[0.03]">
-          <div className="mx-auto max-w-7xl px-6 py-20">
-            <div className="mb-12 max-w-2xl">
+          <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+            <div className="mb-10 max-w-2xl md:mb-12">
               <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
                 Como funciona
               </div>
-              <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+              <h2 className="font-[var(--font-space)] mt-3 text-2xl font-semibold tracking-tight text-white md:text-4xl">
                 Processo simples, direto e profissional.
               </h2>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               {steps.map((step, index) => (
-                <div key={step} className="rounded-[1.75rem] border border-white/10 bg-zinc-900 p-6">
+                <div
+                  key={step}
+                  className="rounded-[1.5rem] border border-white/10 bg-zinc-900 p-5 md:rounded-[1.75rem] md:p-6"
+                >
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-400/15 text-sm font-semibold text-emerald-300">
                     0{index + 1}
                   </div>
@@ -480,25 +562,32 @@ export default function SasaTechHomepage() {
           </div>
         </section>
 
-        <section id="sobre" className="mx-auto max-w-7xl px-6 py-20">
-          <div className="grid gap-10 md:grid-cols-[1.05fr_0.95fr]">
+        <section id="sobre" className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+          <div className="grid gap-8 md:grid-cols-[1.05fr_0.95fr] md:gap-10">
             <div>
               <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
                 Sobre a SASA TECH
               </div>
-              <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+              <h2 className="font-[var(--font-space)] mt-3 text-2xl font-semibold tracking-tight text-white md:text-4xl">
                 Atendimento de TI com presença premium e comunicação simples.
               </h2>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300">
-                Trabalho com manutenção e montagem de computadores com foco em atendimento honesto, rápido e profissional. A SASA TECH foi pensada para transmitir confiança logo no primeiro contato, com linguagem clara e foco em resultado.
+              <p className="mt-6 max-w-2xl text-sm leading-8 text-zinc-300 md:text-base">
+                Trabalho com manutenção e montagem de computadores com foco em
+                atendimento honesto, rápido e profissional. A SASA TECH foi
+                pensada para transmitir confiança logo no primeiro contato, com
+                linguagem clara e foco em resultado.
               </p>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-400">
-                O objetivo é oferecer um serviço de TI confiável, com atendimento direto, orçamento claro e soluções pensadas para quem quer praticidade no dia a dia.
+              <p className="mt-4 max-w-2xl text-sm leading-8 text-zinc-400 md:text-base">
+                O objetivo é oferecer um serviço de TI confiável, com
+                atendimento direto, orçamento claro e soluções pensadas para
+                quem quer praticidade no dia a dia.
               </p>
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
-              <h3 className="font-[var(--font-space)] text-xl font-semibold text-white">Diferenciais</h3>
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 md:rounded-[2rem] md:p-8">
+              <h3 className="font-[var(--font-space)] text-xl font-semibold text-white">
+                Diferenciais
+              </h3>
               <div className="mt-6 space-y-4 text-sm leading-6 text-zinc-300">
                 {[
                   "Explicação clara, sem linguagem complicada",
@@ -506,7 +595,10 @@ export default function SasaTechHomepage() {
                   "Atendimento local com resposta rápida",
                   "Busca e entrega do PC, quando combinado",
                 ].map((item) => (
-                  <div key={item} className="rounded-2xl border border-white/10 bg-zinc-900 p-4">
+                  <div
+                    key={item}
+                    className="rounded-2xl border border-white/10 bg-zinc-900 p-4"
+                  >
                     {item}
                   </div>
                 ))}
@@ -516,48 +608,59 @@ export default function SasaTechHomepage() {
         </section>
 
         <section id="faq" className="border-y border-white/10 bg-white/[0.03]">
-          <div className="mx-auto max-w-7xl px-6 py-20">
-            <div className="mb-12 max-w-2xl">
+          <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+            <div className="mb-10 max-w-2xl md:mb-12">
               <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-400">
                 Perguntas frequentes
               </div>
-              <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-4xl">
+              <h2 className="font-[var(--font-space)] mt-3 text-2xl font-semibold tracking-tight text-white md:text-4xl">
                 Dúvidas que o cliente costuma ter antes de chamar.
               </h2>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
               {faqs.map((item) => (
-                <div key={item.q} className="rounded-[1.75rem] border border-white/10 bg-zinc-900 p-6">
-                  <h3 className="font-[var(--font-space)] text-lg font-semibold text-white">{item.q}</h3>
-                  <p className="mt-3 text-sm leading-6 text-zinc-400">{item.a}</p>
+                <div
+                  key={item.q}
+                  className="rounded-[1.5rem] border border-white/10 bg-zinc-900 p-5 md:rounded-[1.75rem] md:p-6"
+                >
+                  <h3 className="font-[var(--font-space)] text-lg font-semibold text-white">
+                    {item.q}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-400">
+                    {item.a}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="contato" className="mx-auto max-w-7xl px-6 py-20">
-          <div className="rounded-[2rem] border border-emerald-400/20 bg-gradient-to-br from-emerald-400/15 to-zinc-900 p-8 md:p-12">
-            <div className="grid gap-10 md:grid-cols-[1.15fr_0.85fr]">
+        <section id="contato" className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+          <div className="rounded-[1.5rem] border border-emerald-400/20 bg-gradient-to-br from-emerald-400/15 to-zinc-900 p-5 md:rounded-[2rem] md:p-12">
+            <div className="grid gap-8 md:grid-cols-[1.15fr_0.85fr] md:gap-10">
               <div>
                 <div className="text-sm font-medium uppercase tracking-[0.25em] text-emerald-300">
                   Contato
                 </div>
-                <h2 className="font-[var(--font-space)] mt-3 text-3xl font-semibold tracking-tight text-white md:text-5xl">
+                <h2 className="font-[var(--font-space)] mt-3 text-2xl font-semibold tracking-tight text-white md:text-5xl">
                   Pronto para transformar visita em orçamento.
                 </h2>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-200">
-                  Fale direto pelos canais abaixo. O foco aqui é facilitar o contato rápido para orçamento, atendimento e dúvidas sobre manutenção, upgrade ou montagem.
+                <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-200 md:text-base">
+                  Fale direto pelos canais abaixo. O foco aqui é facilitar o
+                  contato rápido para orçamento, atendimento e dúvidas sobre
+                  manutenção, upgrade ou montagem.
                 </p>
               </div>
 
-              <div className="space-y-4 rounded-[1.75rem] border border-white/10 bg-zinc-950/70 p-6">
+              <div className="space-y-4 rounded-[1.5rem] border border-white/10 bg-zinc-950/70 p-5 md:rounded-[1.75rem] md:p-6">
                 <a
-                  href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent("Olá, quero solicitar um orçamento.")}`}
+                  href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent(
+                    "Olá, quero solicitar um orçamento."
+                  )}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10"
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200 transition hover:bg-white/10 md:py-4"
                 >
                   <MessageCircle className="h-5 w-5 text-emerald-400" />
                   WhatsApp
@@ -566,14 +669,14 @@ export default function SasaTechHomepage() {
                   href={contactLinks.instagram}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10"
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200 transition hover:bg-white/10 md:py-4"
                 >
                   <AtSign className="h-5 w-5 text-emerald-400" />
                   @sasa.tech
                 </a>
                 <a
                   href={contactLinks.email}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-zinc-200 transition hover:bg-white/10"
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200 transition hover:bg-white/10 md:py-4"
                 >
                   <Mail className="h-5 w-5 text-emerald-400" />
                   contato@sasatech.com.br
@@ -584,7 +687,7 @@ export default function SasaTechHomepage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 px-6 py-8 text-center text-sm text-zinc-500">
+      <footer className="border-t border-white/10 px-4 py-6 text-center text-sm text-zinc-500 md:px-6 md:py-8">
         © 2026 SASA TECH • Joinville / SC • sasatech.com.br
       </footer>
     </div>
