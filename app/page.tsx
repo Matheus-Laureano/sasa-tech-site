@@ -84,7 +84,7 @@ export default function SasaTechHomepage() {
 
   const contactLinks = {
     whatsappBase: "5547999609562",
-    instagram: "https://instagram.com/sasa.tech",
+    instagram: "https://instagram.com/sasatech.br",
     email: "mailto:contato@sasatech.com.br",
   };
 
@@ -109,7 +109,7 @@ export default function SasaTechHomepage() {
       `Equipamento: ${form.equipment}`,
       `Urgência: ${form.urgency}`,
       `Bairro/Região: ${form.neighborhood || "Não informado"}`,
-      `Detalhes do problema: ${form.details || "Não informado"}`,
+      `Detalhes: ${form.details || "Não informado"}`,
     ].join("\n");
 
     return `https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent(message)}`;
@@ -319,7 +319,7 @@ export default function SasaTechHomepage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6 md:py-4">
           <a href="#inicio" className="group flex items-center gap-3">
             <Image
-              src="/logo.png"
+              src="/logo-v2.png"
               alt="SASA TECH"
               width={44}
               height={44}
@@ -330,7 +330,7 @@ export default function SasaTechHomepage() {
                 SASA TECH
               </span>
               <span className="text-[11px] text-zinc-400 md:text-xs">
-                Joinville • SC
+                PERFORMANCE QUE VOCÊ CONFIA
               </span>
             </div>
           </a>
@@ -672,7 +672,7 @@ export default function SasaTechHomepage() {
                   className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200 transition hover:bg-white/10 md:py-4"
                 >
                   <AtSign className="h-5 w-5 text-emerald-400" />
-                  @sasa.tech
+                  @sasatech.br
                 </a>
                 <a
                   href={contactLinks.email}
