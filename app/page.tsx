@@ -688,7 +688,16 @@ export default function SasaTechHomepage() {
       </main>
 
       <footer className="border-t border-white/10 px-4 py-6 text-center text-sm text-zinc-500 md:px-6 md:py-8">
-        © 2026 SASA TECH • Joinville / SC • sasatech.com.br
+        <div className="flex flex-col items-center gap-2">
+          <div>© 2026 SASA TECH • Joinville / SC • sasatech.com.br</div>
+
+          <a
+            href="/login"
+            className="text-[10px] text-zinc-700 transition hover:text-emerald-400"
+          >
+            PAINEL INTERNO
+          </a>
+        </div>
       </footer>
     </div>
   );
