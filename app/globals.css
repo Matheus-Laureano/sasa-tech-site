@@ -24,3 +24,114 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.fc {
+  --fc-border-color: rgba(255, 255, 255, 0.08);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: rgba(255, 255, 255, 0.03);
+  --fc-list-event-hover-bg-color: rgba(255, 255, 255, 0.04);
+  --fc-today-bg-color: rgba(16, 185, 129, 0.08);
+  --fc-now-indicator-color: #10b981;
+}
+
+.fc .fc-toolbar {
+  gap: 12px;
+  margin-bottom: 18px !important;
+  flex-wrap: wrap;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 2rem !important;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.fc .fc-button {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: white !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  padding: 0.65rem 0.9rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+.fc .fc-button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.fc .fc-button-active {
+  background: rgba(59, 130, 246, 0.18) !important;
+  border-color: rgba(59, 130, 246, 0.22) !important;
+}
+
+.fc .fc-scrollgrid,
+.fc .fc-theme-standard td,
+.fc .fc-theme-standard th {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.fc .fc-col-header-cell {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px 0;
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: #e5e7eb !important;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  padding: 10px 6px !important;
+}
+
+.fc .fc-timegrid-slot-label-cushion,
+.fc .fc-timegrid-axis-cushion {
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.fc .fc-daygrid-day-number {
+  color: #d4d4d8;
+  text-decoration: none !important;
+  padding: 8px !important;
+}
+
+.fc .fc-event {
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 2px 6px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600;
+}
+
+.fc .fc-event-title,
+.fc .fc-event-time {
+  color: white !important;
+}
+
+.fc .fc-timegrid-now-indicator-line {
+  border-color: #10b981 !important;
+}
+
+.fc .fc-scrollgrid {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .fc .fc-toolbar-title {
+    font-size: 1.35rem !important;
+  }
+
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.78rem;
+  }
+
+  .fc .fc-button {
+    padding: 0.55rem 0.75rem !important;
+    font-size: 0.82rem !important;
+  }
+}

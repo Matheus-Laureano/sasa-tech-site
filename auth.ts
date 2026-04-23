@@ -2,30 +2,33 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    providers: [Google],
-    pages: {
-        signIn: "/login",
+  providers: [Google],
+  pages: {
+    signIn: "/login",
+  },
+  callbacks: {
+    async signIn() {
+      return true;
     },
-    callbacks: {
-        async signIn({ profile }) {
-            const allowedEmail = "matheuszlau@gmail.com";
 
-            if (profile?.email !== allowedEmail) {
-                return false;
-            }
+    authorized({ auth, request }) {
+      const pathname = request.nextUrl.pathname;
+      const userEmail = auth?.user?.email;
 
-            return true;
-        },
+      const isLoggedIn = !!auth?.user;
+      const isAdminRoute = pathname.startsWith("/admin");
+      const isAgendaRoute = pathname.startsWith("/agenda");
 
-        authorized({ auth, request }) {
-            const isLoggedIn = !!auth?.user;
-            const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
+      if (isAdminRoute) {
+        if (!isLoggedIn) return false;
+        return userEmail === "matheuszlau@gmail.com";
+      }
 
-            if (isAdminRoute) {
-                return isLoggedIn;
-            }
+      if (isAgendaRoute) {
+        return isLoggedIn;
+      }
 
-            return true;
-        },
+      return true;
     },
+  },
 });

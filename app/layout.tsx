@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import AuthSessionProvider from "@/components/session-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${space.variable}`}>
       <body className={`${inter.className} min-h-screen bg-zinc-950 text-zinc-100 antialiased`}>
-        {children}
+        <AuthSessionProvider>{children}</AuthSessionProvider>
       </body>
     </html>
   );
