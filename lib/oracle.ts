@@ -48,20 +48,26 @@ export async function insertLead(leadData: {
 export async function getLeads() {
   let connection;
   try {
+    console.log("Tentando conectar ao Oracle...");
     connection = await getConnection();
+    console.log("Conexão estabelecida, executando query...");
+
     const sql = `
       SELECT id, nome, telefone, email, servico, mensagem, created_at
       FROM leads
       ORDER BY created_at DESC
     `;
     const result = await connection.execute(sql);
+    console.log("Query executada com sucesso, retornando", result.rows?.length || 0, "leads");
+
     return result.rows || [];
   } catch (error) {
-    console.error("Error getting leads:", error);
-    throw error;
+    console.error("Erro detalhado ao buscar leads:", error);
+    throw new Error(`Erro ao carregar leads: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
   } finally {
     if (connection) {
       await connection.close();
+      console.log("Conexão fechada");
     }
   }
 }

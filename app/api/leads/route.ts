@@ -3,11 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    console.log("API: Iniciando busca de leads...");
     const leads = await getLeads();
+    console.log(`API: Retornando ${leads.length} leads`);
     return NextResponse.json({ leads }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching leads:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("API: Erro ao buscar leads:", error);
+    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+    return NextResponse.json({
+      error: `Erro ao carregar leads: ${errorMessage}`,
+      details: errorMessage
+    }, { status: 500 });
   }
 }
 
