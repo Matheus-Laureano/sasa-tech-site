@@ -1,8 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   AtSign,
+  ArrowUp,
+  Calendar,
   CheckCircle2,
   Cpu,
   HardDrive,
@@ -17,6 +21,8 @@ import {
 import Image from "next/image";
 
 export default function SasaTechHomepage() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const services = [
     {
       title: "Formatação",
@@ -89,6 +95,7 @@ export default function SasaTechHomepage() {
   };
 
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [form, setForm] = useState({
     name: "",
     whatsapp: "",
@@ -121,12 +128,62 @@ export default function SasaTechHomepage() {
 
   function handleQuoteSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    
+    // Salvar o lead no banco de dados
+    fetch("/api/leads", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: form.name,
+        whatsapp: form.whatsapp,
+        service: form.service,
+        equipment: form.equipment,
+        urgency: form.urgency,
+        neighborhood: form.neighborhood,
+        details: form.details,
+      }),
+    }).catch((error) => console.error("Erro ao salvar lead:", error));
+
+    // Abrir WhatsApp
     window.open(whatsappHref, "_blank", "noopener,noreferrer");
     setIsQuoteOpen(false);
   }
 
+  function handleAgendaClick() {
+    if (session) {
+      router.push("/agenda");
+    } else {
+      signIn("google");
+    }
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollToTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-emerald-400 selection:text-zinc-950">
+      {showScrollToTop && (
+        <button
+          onClick={scrollToTop}
+          className="cursor-pointer fixed bottom-20 right-4 z-50 inline-flex items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400 p-3 text-zinc-950 shadow-2xl shadow-emerald-950/40 transition hover:scale-[1.02] md:bottom-24 md:right-5"
+          aria-label="Voltar ao topo"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      )}
+
       <a
         href={`https://wa.me/${contactLinks.whatsappBase}?text=${encodeURIComponent(
           "Olá, quero solicitar um orçamento."
@@ -155,7 +212,7 @@ export default function SasaTechHomepage() {
               <button
                 type="button"
                 onClick={() => setIsQuoteOpen(false)}
-                className="rounded-full border border-white/10 p-2 text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                className="cursor-pointer rounded-full border border-white/10 p-2 text-zinc-400 transition hover:bg-white/5 hover:text-white"
                 aria-label="Fechar"
               >
                 <X className="h-5 w-5" />
@@ -299,13 +356,13 @@ export default function SasaTechHomepage() {
                 <button
                   type="button"
                   onClick={() => setIsQuoteOpen(false)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+                  className="cursor-pointer rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10"
                 >
                   Fechar
                 </button>
                 <button
                   type="submit"
-                  className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:opacity-90"
+                  className="cursor-pointer rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:opacity-90"
                 >
                   Enviar para WhatsApp
                 </button>
@@ -353,13 +410,24 @@ export default function SasaTechHomepage() {
             </a>
           </nav>
 
-          <button
-            type="button"
-            onClick={() => setIsQuoteOpen(true)}
-            className="cursor-pointer rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
-          >
-            Solicitar orçamento
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleAgendaClick}
+              className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
+            >
+              <Calendar className="h-4 w-4" />
+              Agenda
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsQuoteOpen(true)}
+              className="cursor-pointer rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
+            >
+              Solicitar orçamento
+            </button>
+          </div>
         </div>
       </header>
 

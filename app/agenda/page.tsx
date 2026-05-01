@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -8,6 +9,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
+    ArrowLeft,
     CalendarDays,
     CircleOff,
     Filter,
@@ -20,6 +22,7 @@ import type { AgendaContext, AgendaEvent, CalendarEvent } from "@/types/agenda";
 
 export default function AgendaPage() {
     const { data: session, status } = useSession();
+    const router = useRouter();
 
     const [contexts, setContexts] = useState<AgendaContext[]>([]);
     const [events, setEvents] = useState<AgendaEvent[]>([]);
@@ -249,14 +252,25 @@ export default function AgendaPage() {
                         </p>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-2xl bg-emerald-400 px-6 text-sm font-semibold text-zinc-950 transition hover:opacity-90"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Novo evento
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => router.push("/")}
+                            className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition hover:bg-white/10"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                            Voltar ao site
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-2xl bg-emerald-400 px-6 text-sm font-semibold text-zinc-950 transition hover:opacity-90"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Novo evento
+                        </button>
+                    </div>
                 </div>
 
                 {error && (
