@@ -31,15 +31,18 @@ export default function AdminPage() {
           </p>
         </Link>
 
-        <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6">
+        <Link
+          href="/admin/leads"
+          className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+        >
           <h2 className="font-[var(--font-space)] text-xl font-semibold text-white">
             Leads
           </h2>
 
           <p className="mt-3 text-sm text-zinc-400">
-            Em breve: pedidos de orçamento salvos aqui.
+            Visualize os pedidos de orçamento recebidos.
           </p>
-        </div>
+        </Link>
       </div>
     </div>
   );

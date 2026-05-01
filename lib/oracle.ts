@@ -44,6 +44,28 @@ export async function insertLead(leadData: {
   }
 }
 
+// Função para buscar leads
+export async function getLeads() {
+  let connection;
+  try {
+    connection = await getConnection();
+    const sql = `
+      SELECT id, nome, telefone, email, servico, mensagem, created_at
+      FROM leads
+      ORDER BY created_at DESC
+    `;
+    const result = await connection.execute(sql);
+    return result.rows || [];
+  } catch (error) {
+    console.error("Error getting leads:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      await connection.close();
+    }
+  }
+}
+
 // Funções para agenda
 export async function getAgendaEvents(userEmail: string) {
   let connection;
