@@ -12,21 +12,21 @@ import {
     ArrowLeft,
     CalendarDays,
     CircleOff,
-    Filter,
     Loader2,
     Plus,
     X,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import {
+    getAgendaEvents,
+    insertAgendaEvent,
+} from "@/lib/oracle";
 import type { AgendaContext, AgendaEvent, CalendarEvent } from "@/types/agenda";
 
 export default function AgendaPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    const [contexts, setContexts] = useState<AgendaContext[]>([]);
     const [events, setEvents] = useState<AgendaEvent[]>([]);
-    const [selectedContextIds, setSelectedContextIds] = useState<string[]>([]);
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -48,79 +48,19 @@ export default function AgendaPage() {
             try {
                 const email = session.user.email;
 
-                const { data: userRow, error: userError } = await supabase
-                    .from("agenda_users")
-                    .select("id,email,name")
-                    .eq("email", email)
-                    .maybeSingle();
+                const eventsData = await getAgendaEvents(email);
 
-                if (userError) {
-                    throw userError;
-                }
+                const safeEvents = (eventsData ?? []).map((evt: any) => ({
+                    id: evt.ID.toString(),
+                    user_email: evt.USER_EMAIL,
+                    title: evt.TITLE,
+                    description: evt.DESCRIPTION,
+                    context: evt.CONTEXT,
+                    start_at: evt.START_AT,
+                    end_at: evt.END_AT,
+                })) as AgendaEvent[];
 
-                let userId = userRow?.id;
-
-                if (!userId) {
-                    const generatedId =
-                        typeof crypto !== "undefined" && "randomUUID" in crypto
-                            ? crypto.randomUUID()
-                            : `${Date.now()}`;
-
-                    const { data: insertedUser, error: insertUserError } = await supabase
-                        .from("agenda_users")
-                        .insert({
-                            id: generatedId,
-                            email,
-                            name: session.user.name ?? null,
-                        })
-                        .select("id")
-                        .single();
-
-                    if (insertUserError) {
-                        throw insertUserError;
-                    }
-
-                    userId = insertedUser.id;
-
-                    const defaultContexts = [
-                        { user_id: userId, name: "Trabalho", color: "#10b981", is_visible: true },
-                        { user_id: userId, name: "Pessoal", color: "#3b82f6", is_visible: true },
-                        { user_id: userId, name: "Estudo", color: "#a855f7", is_visible: true },
-                        { user_id: userId, name: "Saúde", color: "#f59e0b", is_visible: true },
-                    ];
-
-                    const { error: contextInsertError } = await supabase
-                        .from("agenda_contexts")
-                        .insert(defaultContexts);
-
-                    if (contextInsertError) {
-                        throw contextInsertError;
-                    }
-                }
-
-                const [{ data: contextsData, error: contextsError }, { data: eventsData, error: eventsError }] =
-                    await Promise.all([
-                        supabase
-                            .from("agenda_contexts")
-                            .select("*")
-                            .eq("user_id", userId)
-                            .order("created_at", { ascending: true }),
-                        supabase
-                            .from("agenda_events")
-                            .select("*")
-                            .eq("user_id", userId)
-                            .order("start_at", { ascending: true }),
-                    ]);
-
-                if (contextsError) throw contextsError;
-                if (eventsError) throw eventsError;
-
-                const safeContexts = (contextsData ?? []) as AgendaContext[];
-                const safeEvents = (eventsData ?? []) as AgendaEvent[];
-
-                setContexts(safeContexts);
                 setEvents(safeEvents);
-                setSelectedContextIds(safeContexts.filter((ctx) => ctx.is_visible).map((ctx) => ctx.id));
             } catch (err) {
                 console.error(err);
                 setError("Não foi possível carregar sua agenda.");
@@ -133,42 +73,15 @@ export default function AgendaPage() {
     }, [status, session]);
 
     const calendarEvents = useMemo<CalendarEvent[]>(() => {
-        const visibleContexts = new Map(contexts.map((context) => [context.id, context]));
-
-        return events
-            .filter((event) => {
-                if (!event.context_id) return true;
-                return selectedContextIds.includes(event.context_id);
-            })
-            .map((event) => {
-                const context = event.context_id ? visibleContexts.get(event.context_id) : null;
-
-                return {
-                    id: event.id,
-                    title: event.title,
-                    start: event.start_at,
-                    end: event.end_at,
-                    backgroundColor: context?.color ?? "#10b981",
-                    borderColor: context?.color ?? "#10b981",
-                    extendedProps: {
-                        contextId: event.context_id,
-                        energyLevel: event.energy_level,
-                        description: event.description_markdown,
-                        isFlexible: event.is_flexible,
-                        isMeeting: event.is_meeting,
-                        isCompleted: event.is_completed,
-                    },
-                };
-            });
-    }, [events, contexts, selectedContextIds]);
-
-    function toggleContext(contextId: string) {
-        setSelectedContextIds((prev) =>
-            prev.includes(contextId)
-                ? prev.filter((id) => id !== contextId)
-                : [...prev, contextId]
-        );
-    }
+        return events.map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: event.start_at,
+            end: event.end_at || event.start_at, // fallback se end_at for null
+            backgroundColor: "#10b981", // cor padrão
+            borderColor: "#10b981",
+        }));
+    }, [events]);
 
     async function handleCreateEvent() {
         if (!session?.user?.email) return;
@@ -182,36 +95,14 @@ export default function AgendaPage() {
             const start = new Date();
             const end = new Date(start.getTime() + 60 * 60 * 1000);
 
-            const { data: userData } = await supabase
-                .from("agenda_users")
-                .select("id")
-                .eq("email", session.user.email)
-                .single();
-
-            if (!userData) {
-                alert("Usuário não encontrado");
-                return;
-            }
-
-            const defaultContext = contexts[0];
-
-            const { error } = await supabase.from("agenda_events").insert({
-                user_id: userData.id,
-                context_id: defaultContext?.id ?? null,
+            await insertAgendaEvent({
+                user_email: session.user.email,
                 title: newEventTitle,
+                description: "",
+                context: "Pessoal", // contexto padrão
                 start_at: start.toISOString(),
                 end_at: end.toISOString(),
-                energy_level: "medio",
-                is_flexible: false,
-                is_meeting: false,
-                is_completed: false,
             });
-
-            if (error) {
-                console.error(error);
-                alert("Erro ao criar evento");
-                return;
-            }
 
             setNewEventTitle("");
             setIsCreateModalOpen(false);
@@ -279,63 +170,7 @@ export default function AgendaPage() {
                     </div>
                 )}
 
-                <div className="mb-6 grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
-                    <aside className="rounded-[1.75rem] border border-white/10 bg-zinc-900/60 p-5">
-                        <div className="mb-5 flex items-center gap-2">
-                            <Filter className="h-4 w-4 text-emerald-400" />
-                            <h2 className="font-[var(--font-space)] text-lg font-semibold text-white">
-                                Contextos
-                            </h2>
-                        </div>
-
-                        <div className="space-y-3">
-                            {contexts.length === 0 ? (
-                                <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 text-sm text-zinc-400">
-                                    Nenhum contexto encontrado.
-                                </div>
-                            ) : (
-                                contexts.map((context) => {
-                                    const isActive = selectedContextIds.includes(context.id);
-
-                                    return (
-                                        <button
-                                            key={context.id}
-                                            type="button"
-                                            onClick={() => toggleContext(context.id)}
-                                            className={`flex w-full cursor-pointer items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition ${isActive
-                                                ? "border-white/10 bg-white/[0.08] text-white"
-                                                : "border-white/10 bg-zinc-950/70 text-zinc-400"
-                                                }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span
-                                                    className="h-3 w-3 rounded-full"
-                                                    style={{ backgroundColor: context.color }}
-                                                />
-                                                <span>{context.name}</span>
-                                            </div>
-
-                                            <span className="text-xs">
-                                                {isActive ? "visível" : "oculto"}
-                                            </span>
-                                        </button>
-                                    );
-                                })
-                            )}
-                        </div>
-
-                        <div className="mt-6 rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
-                            <div className="mb-2 flex items-center gap-2">
-                                <CalendarDays className="h-4 w-4 text-emerald-400" />
-                                <span className="text-sm font-medium text-white">Como funciona</span>
-                            </div>
-                            <p className="text-sm leading-6 text-zinc-400">
-                                Ocultar um contexto remove apenas da visualização. Os horários ainda
-                                devem continuar bloqueando conflitos.
-                            </p>
-                        </div>
-                    </aside>
-
+                <div className="mb-6">
                     <section className="rounded-[1.75rem] border border-white/10 bg-zinc-900/60 p-4 xl:p-6">
                         {calendarEvents.length === 0 ? (
                             <div className="flex min-h-[500px] flex-col items-center justify-center rounded-[1.25rem] border border-dashed border-white/10 bg-zinc-900/40 p-8 text-center">

@@ -11,16 +11,12 @@ export type AgendaContext = {
 
 export type AgendaEvent = {
   id: string;
-  user_id: string;
-  context_id: string | null;
+  user_email: string;
   title: string;
-  description_markdown: string | null;
+  description: string | null;
+  context: string | null;
   start_at: string;
-  end_at: string;
-  energy_level: EnergyLevel;
-  is_flexible: boolean;
-  is_meeting: boolean;
-  is_completed: boolean;
+  end_at: string | null;
   created_at: string;
 };
 
@@ -31,12 +27,4 @@ export type CalendarEvent = {
   end: string;
   backgroundColor?: string;
   borderColor?: string;
-  extendedProps: {
-    contextId: string | null;
-    energyLevel: EnergyLevel;
-    description: string | null;
-    isFlexible: boolean;
-    isMeeting: boolean;
-    isCompleted: boolean;
-  };
 };
