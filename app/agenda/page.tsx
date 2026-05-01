@@ -16,11 +16,7 @@ import {
     Plus,
     X,
 } from "lucide-react";
-import {
-    getAgendaEvents,
-    insertAgendaEvent,
-} from "@/lib/oracle";
-import type { AgendaContext, AgendaEvent, CalendarEvent } from "@/types/agenda";
+import type { AgendaEvent, CalendarEvent } from "@/types/agenda";
 
 export default function AgendaPage() {
     const { data: session, status } = useSession();
@@ -48,9 +44,13 @@ export default function AgendaPage() {
             try {
                 const email = session.user.email;
 
-                const eventsData = await getAgendaEvents(email);
+                const response = await fetch(`/api/agenda?userEmail=${encodeURIComponent(email)}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch events');
+                }
+                const data = await response.json();
 
-                const safeEvents = (eventsData ?? []).map((evt: any) => ({
+                const safeEvents = (data.events ?? []).map((evt: any) => ({
                     id: evt.ID.toString(),
                     user_email: evt.USER_EMAIL,
                     title: evt.TITLE,
@@ -95,14 +95,24 @@ export default function AgendaPage() {
             const start = new Date();
             const end = new Date(start.getTime() + 60 * 60 * 1000);
 
-            await insertAgendaEvent({
-                user_email: session.user.email,
-                title: newEventTitle,
-                description: "",
-                context: "Pessoal", // contexto padrão
-                start_at: start.toISOString(),
-                end_at: end.toISOString(),
+            const response = await fetch('/api/agenda', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_email: session.user.email,
+                    title: newEventTitle,
+                    description: "",
+                    context: "Pessoal",
+                    start_at: start.toISOString(),
+                    end_at: end.toISOString(),
+                }),
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to create event');
+            }
 
             setNewEventTitle("");
             setIsCreateModalOpen(false);
