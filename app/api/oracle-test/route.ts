@@ -27,9 +27,14 @@ export async function GET() {
       tableInfo = columnsResult.rows || [];
 
       // Contar registros
-      const countResult = await connection.execute("SELECT COUNT(*) as total FROM leads");
-      recordCount = countResult.rows?.[0]?.[0] || 0;
-    }
+      const countResult = await connection.execute(
+        "SELECT COUNT(*) FROM leads"
+        );
+
+        const rows = countResult.rows as [number][] | undefined;
+
+        recordCount = rows?.[0]?.[0] ?? 0;
+            }
 
     await connection.close();
     console.log("Teste: Conexão fechada");
