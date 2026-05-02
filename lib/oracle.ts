@@ -1,14 +1,51 @@
 import oracledb from "oracledb";
 
+const LEADS_TABLE = "LEADS";
+
 export async function getConnection() {
   return await oracledb.getConnection({
     user: process.env.ORACLE_USER!,
     password: process.env.ORACLE_PASSWORD!,
     connectString: process.env.ORACLE_CONNECTION_STRING!,
+    configDir: process.env.TNS_ADMIN,
   });
 }
 
-// Função para inserir leads
+async function ensureLeadsTable(connection: oracledb.Connection) {
+  const result = await connection.execute(
+    `
+    SELECT COUNT(*) as "total"
+    FROM user_tables
+    WHERE table_name = 'LEADS'
+    `,
+    [],
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  const rows = result.rows as { total: number }[];
+  const exists = rows?.[0]?.total > 0;
+
+  if (exists) {
+    return;
+  }
+
+  console.log("Tabela LEADS não encontrada. Criando tabela...");
+
+  await connection.execute(`
+    CREATE TABLE LEADS (
+      ID VARCHAR2(36) DEFAULT RAWTOHEX(SYS_GUID()) PRIMARY KEY,
+      NOME VARCHAR2(255) NOT NULL,
+      TELEFONE VARCHAR2(50),
+      EMAIL VARCHAR2(255),
+      SERVICO VARCHAR2(255),
+      MENSAGEM CLOB,
+      CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  console.log("Tabela LEADS criada com sucesso.");
+}
+
 export async function insertLead(leadData: {
   name: string;
   whatsapp: string;
@@ -19,24 +56,36 @@ export async function insertLead(leadData: {
   details?: string;
 }) {
   let connection;
+
   try {
     connection = await getConnection();
+    await ensureLeadsTable(connection);
+
     const sql = `
-      INSERT INTO leads (nome, telefone, email, servico, mensagem)
-      VALUES (:nome, :telefone, :email, :servico, :mensagem)
+      INSERT INTO ${LEADS_TABLE} 
+        (NOME, TELEFONE, EMAIL, SERVICO, MENSAGEM)
+      VALUES 
+        (:nome, :telefone, :email, :servico, :mensagem)
     `;
+
     const binds = {
       nome: leadData.name,
       telefone: leadData.whatsapp,
-      email: leadData.equipment || '', // usando equipment como email por enquanto
+      email: "",
       servico: leadData.service,
-      mensagem: `${leadData.urgency}${leadData.neighborhood ? ` - ${leadData.neighborhood}` : ''}${leadData.details ? ` - ${leadData.details}` : ''}`,
+      mensagem: [
+        leadData.equipment && `Equipamento: ${leadData.equipment}`,
+        leadData.urgency && `Urgência: ${leadData.urgency}`,
+        leadData.neighborhood && `Bairro: ${leadData.neighborhood}`,
+        leadData.details && `Detalhes: ${leadData.details}`,
+      ]
+        .filter(Boolean)
+        .join(" | "),
     };
+
     await connection.execute(sql, binds, { autoCommit: true });
+
     return { success: true };
-  } catch (error) {
-    console.error("Error inserting lead:", error);
-    throw error;
   } finally {
     if (connection) {
       await connection.close();
@@ -44,84 +93,39 @@ export async function insertLead(leadData: {
   }
 }
 
-// Função para buscar leads
 export async function getLeads() {
   let connection;
+
   try {
-    console.log("Tentando conectar ao Oracle...");
     connection = await getConnection();
-    console.log("Conexão estabelecida, executando query...");
+    await ensureLeadsTable(connection);
 
     const sql = `
-      SELECT id, nome, telefone, email, servico, mensagem, created_at
-      FROM leads
-      ORDER BY created_at DESC
+      SELECT 
+        ID as "id",
+        NOME as "nome",
+        TELEFONE as "telefone",
+        EMAIL as "email",
+        SERVICO as "servico",
+        MENSAGEM as "mensagem",
+        CREATED_AT as "created_at"
+      FROM ${LEADS_TABLE}
+      ORDER BY CREATED_AT DESC
     `;
-    const result = await connection.execute(sql);
-    console.log("Query executada com sucesso, retornando", result.rows?.length || 0, "leads");
+
+    const result = await connection.execute(sql, [], {
+      outFormat: oracledb.OUT_FORMAT_OBJECT,
+    });
 
     return result.rows || [];
   } catch (error) {
     console.error("Erro detalhado ao buscar leads:", error);
-    throw new Error(`Erro ao carregar leads: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
-  } finally {
-    if (connection) {
-      await connection.close();
-      console.log("Conexão fechada");
-    }
-  }
-}
 
-// Funções para agenda
-export async function getAgendaEvents(userEmail: string) {
-  let connection;
-  try {
-    connection = await getConnection();
-    const sql = `
-      SELECT id, user_email, title, description, context, start_at, end_at
-      FROM agenda_events
-      WHERE user_email = :user_email
-      ORDER BY start_at
-    `;
-    const result = await connection.execute(sql, [userEmail]);
-    return result.rows || [];
-  } catch (error) {
-    console.error("Error getting agenda events:", error);
-    throw error;
-  } finally {
-    if (connection) {
-      await connection.close();
-    }
-  }
-}
-
-export async function insertAgendaEvent(eventData: {
-  user_email: string;
-  title: string;
-  description?: string;
-  context?: string;
-  start_at: string;
-  end_at?: string;
-}) {
-  let connection;
-  try {
-    connection = await getConnection();
-    const sql = `
-      INSERT INTO agenda_events (user_email, title, description, context, start_at, end_at)
-      VALUES (:user_email, :title, :description, :context, TO_TIMESTAMP(:start_at, 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'), TO_TIMESTAMP(:end_at, 'YYYY-MM-DD"T"HH24:MI:SS.FF3"Z"'))
-    `;
-    const binds = {
-      user_email: eventData.user_email,
-      title: eventData.title,
-      description: eventData.description || null,
-      context: eventData.context || null,
-      start_at: eventData.start_at,
-      end_at: eventData.end_at || null,
-    };
-    await connection.execute(sql, binds, { autoCommit: true });
-  } catch (error) {
-    console.error("Error inserting agenda event:", error);
-    throw error;
+    throw new Error(
+      `Erro ao carregar leads: ${
+        error instanceof Error ? error.message : "Erro desconhecido"
+      }`
+    );
   } finally {
     if (connection) {
       await connection.close();

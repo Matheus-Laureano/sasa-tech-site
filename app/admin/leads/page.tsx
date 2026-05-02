@@ -19,24 +19,41 @@ export default function LeadsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchLeads() {
-      try {
-        const response = await fetch("/api/leads");
-        if (!response.ok) {
-          throw new Error("Erro ao carregar leads");
-        }
-        const data = await response.json();
-        setLeads(data.leads || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro desconhecido");
-      } finally {
-        setLoading(false);
-      }
-    }
+ useEffect(() => {
+  async function fetchLeads() {
+    try {
+      setError(null);
 
-    fetchLeads();
-  }, []);
+      const response = await fetch("/api/leads", {
+        cache: "no-store",
+      });
+
+      let data: any = null;
+
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.details ||
+            data?.error ||
+            `Erro ao carregar leads. Status: ${response.status}`
+        );
+      }
+
+      setLeads(Array.isArray(data?.leads) ? data.leads : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  fetchLeads();
+}, []);
 
   if (loading) {
     return (
