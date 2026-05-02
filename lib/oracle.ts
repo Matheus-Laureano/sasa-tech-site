@@ -8,7 +8,7 @@ export async function getConnection() {
     user: process.env.ORACLE_USER!,
     password: process.env.ORACLE_PASSWORD!,
     connectString: process.env.ORACLE_CONNECTION_STRING!,
-    configDir: process.env.TNS_ADMIN,
+    configDir: path.join(process.cwd(), "Wallet_sasatech"),
   });
 }
 
