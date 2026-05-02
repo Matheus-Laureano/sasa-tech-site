@@ -1,6 +1,7 @@
 import oracledb from "oracledb";
 import path from "path";
 
+oracledb.fetchAsString = [oracledb.CLOB];
 
 const LEADS_TABLE = "LEADS";
 const AGENDA_TABLE = "AGENDA_EVENTS";
@@ -85,9 +86,9 @@ export async function insertLead(leadData: {
     await ensureLeadsTable(connection);
 
     const sql = `
-      INSERT INTO ${LEADS_TABLE} 
+      INSERT INTO ${LEADS_TABLE}
         (NOME, TELEFONE, EMAIL, SERVICO, MENSAGEM)
-      VALUES 
+      VALUES
         (:nome, :telefone, :email, :servico, :mensagem)
     `;
 
@@ -107,6 +108,7 @@ export async function insertLead(leadData: {
     };
 
     await connection.execute(sql, binds, { autoCommit: true });
+
     return { success: true };
   } finally {
     if (connection) await connection.close();
@@ -121,13 +123,13 @@ export async function getLeads() {
     await ensureLeadsTable(connection);
 
     const sql = `
-      SELECT 
+      SELECT
         ID as "id",
         NOME as "nome",
         TELEFONE as "telefone",
         EMAIL as "email",
         SERVICO as "servico",
-        MENSAGEM as "mensagem",
+        TO_CHAR(MENSAGEM) as "mensagem",
         CREATED_AT as "created_at"
       FROM ${LEADS_TABLE}
       ORDER BY CREATED_AT DESC
@@ -162,7 +164,7 @@ export async function getAgendaEvents(userEmail: string) {
         ID as "id",
         USER_EMAIL as "user_email",
         TITLE as "title",
-        DESCRIPTION as "description",
+        TO_CHAR(DESCRIPTION) as "description",
         CONTEXT as "context",
         START_AT as "start_at",
         END_AT as "end_at",
