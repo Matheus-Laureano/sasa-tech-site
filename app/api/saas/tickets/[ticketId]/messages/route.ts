@@ -3,16 +3,17 @@ import { addTicketMessage, fetchTicketMessages, getTicketById } from "@/lib/orac
 import { NextResponse } from "next/server";
 
 interface RouteParams {
-  params: { ticketId: string };
+  params: Promise<{ ticketId: string }>;
 }
 
 export async function GET(_req: Request, { params }: RouteParams) {
+  const resolvedParams = await params;
   const session = await auth();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const ticket = await getTicketById(params.ticketId);
+  const ticket = await getTicketById(resolvedParams.ticketId);
   if (!ticket) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -22,17 +23,18 @@ export async function GET(_req: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const messages = await fetchTicketMessages(params.ticketId);
+  const messages = await fetchTicketMessages(resolvedParams.ticketId);
   return NextResponse.json(messages);
 }
 
 export async function POST(req: Request, { params }: RouteParams) {
+  const resolvedParams = await params;
   const session = await auth();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const ticket = await getTicketById(params.ticketId);
+  const ticket = await getTicketById(resolvedParams.ticketId);
   if (!ticket) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -49,7 +51,7 @@ export async function POST(req: Request, { params }: RouteParams) {
   }
 
   const result = await addTicketMessage(
-    params.ticketId,
+    resolvedParams.ticketId,
     userId,
     session.user.role === "ADMIN",
     message
