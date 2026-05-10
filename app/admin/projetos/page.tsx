@@ -15,10 +15,10 @@ export default function ProjetosPage() {
       status: "Em construção",
     },
     {
-      title: "Novo SaaS",
-      description: "Seu próximo projeto secreto.",
-      href: "/admin/novo-saas",
-      status: "Privado",
+      title: "SaaS Chamados TI",
+      description: "Painel de atendimento e suporte técnico para sua empresa.",
+      href: "/admin/saas",
+      status: "Ativo",
     },
   ];
 
