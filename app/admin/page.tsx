@@ -20,7 +20,8 @@ export default function AdminPage() {
       <div className="grid gap-5 md:grid-cols-2">
         <Link
           href="/admin/projetos"
-          className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          className="block rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          aria-label="Ir para Projetos"
         >
           <h2 className="font-[var(--font-space)] text-xl font-semibold text-white">
             Projetos
@@ -33,7 +34,8 @@ export default function AdminPage() {
 
         <Link
           href="/admin/leads"
-          className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          className="block rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          aria-label="Ir para Leads"
         >
           <h2 className="font-[var(--font-space)] text-xl font-semibold text-white">
             Leads
