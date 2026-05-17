@@ -17,9 +17,15 @@ export async function GET(req: Request) {
   const fromDate = url.searchParams.get("fromDate") || undefined;
   const toDate = url.searchParams.get("toDate") || undefined;
 
-  // Dados mockados para teste sem autenticação
-  const tickets = [];
-    isAdmin: (session.user as any).role === "ADMIN",
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userId = String(session.user.id ?? "");
+  const tickets = await listTickets({
+    userId,
+    isAdmin: false,
     status,
     priority,
     category,
