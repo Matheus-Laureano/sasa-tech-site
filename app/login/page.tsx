@@ -5,7 +5,7 @@ export default async function LoginPage() {
   const session = await auth();
 
   if (session?.user) {
-    redirect("/admin");
+    redirect(session.user.role === "ADMIN" ? "/admin" : "/saas");
   }
 
   return (
@@ -27,7 +27,7 @@ export default async function LoginPage() {
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/admin" });
+              await signIn("google", { redirectTo: "/saas" });
             }}
           >
             <button
