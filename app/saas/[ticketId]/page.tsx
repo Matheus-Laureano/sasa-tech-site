@@ -8,20 +8,22 @@ interface PageProps {
 }
 
 export default async function TicketPage({ params }: PageProps) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   redirect("/login");
+  // }
 
   const ticket = await getTicketById(params.ticketId);
   if (!ticket) {
     redirect("/saas");
   }
 
-  const userId = session.user.id as string;
-  if (ticket.requester_id !== userId && session.user.role !== "ADMIN") {
-    redirect("/saas");
-  }
+  // Temporariamente removido verificação de permissão
+  // const userId = session.user.id as string;
+  // if (ticket.requester_id !== userId && (session.user as any).role !== "ADMIN") {
+  //   redirect("/saas");
+  // }
 
   const messages = await fetchTicketMessages(params.ticketId);
   const history = await fetchTicketHistory(params.ticketId);

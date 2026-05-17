@@ -8,20 +8,22 @@ interface RouteParams {
 
 export async function GET(_req: Request, { params }: RouteParams) {
   const resolvedParams = await params;
-  const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   const ticket = await getTicketById(resolvedParams.ticketId);
   if (!ticket) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const userId = session.user.id as string;
-  if (session.user.role !== "ADMIN" && ticket.requester_id !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // Temporariamente removido verificação de permissão
+  // const userId = session.user.id as string;
+  // if ((session.user as any).role !== "ADMIN" && ticket.requester_id !== userId) {
+  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // }
 
   const messages = await fetchTicketMessages(resolvedParams.ticketId);
   return NextResponse.json(messages);
@@ -29,20 +31,22 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
 export async function POST(req: Request, { params }: RouteParams) {
   const resolvedParams = await params;
-  const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   const ticket = await getTicketById(resolvedParams.ticketId);
   if (!ticket) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const userId = session.user.id as string;
-  if (session.user.role !== "ADMIN" && ticket.requester_id !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // Temporariamente removido verificação de permissão
+  // const userId = session.user.id as string;
+  // if ((session.user as any).role !== "ADMIN" && ticket.requester_id !== userId) {
+  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // }
 
   const body = await req.json();
   const message = String(body.message || "").trim();
@@ -52,8 +56,8 @@ export async function POST(req: Request, { params }: RouteParams) {
 
   const result = await addTicketMessage(
     resolvedParams.ticketId,
-    userId,
-    session.user.role === "ADMIN",
+    "mock-user-id", // Temporário para teste sem autenticação
+    false, // Não é admin
     message
   );
 

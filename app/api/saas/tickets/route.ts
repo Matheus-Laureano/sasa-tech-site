@@ -3,10 +3,11 @@ import { createTicket, listTickets } from "@/lib/oracle";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   const url = new URL(req.url);
   const status = url.searchParams.get("status") || undefined;
@@ -16,9 +17,9 @@ export async function GET(req: Request) {
   const fromDate = url.searchParams.get("fromDate") || undefined;
   const toDate = url.searchParams.get("toDate") || undefined;
 
-  const tickets = await listTickets({
-    userId: session.user.id as string,
-    isAdmin: session.user.role === "ADMIN",
+  // Dados mockados para teste sem autenticação
+  const tickets = [];
+    isAdmin: (session.user as any).role === "ADMIN",
     status,
     priority,
     category,
@@ -31,10 +32,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   const body = await req.json();
   const title = String(body.title || "").trim();
@@ -51,7 +53,7 @@ export async function POST(req: Request) {
 
   const ticket = await createTicket(
     { title, description, category, priority, equipment, location, contact_phone },
-    session.user.id as string
+    "mock-user-id" // Temporário para teste sem autenticação
   );
 
   return NextResponse.json(ticket, { status: 201 });

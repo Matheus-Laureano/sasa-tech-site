@@ -17,10 +17,10 @@ export default function AdminPage() {
         </p>
       </section>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-3">
         <Link
           href="/admin/projetos"
-          className="block rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          className="block cursor-pointer rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
           aria-label="Ir para Projetos"
         >
           <h2 className="font-[var(--font-space)] text-xl font-semibold text-white">
@@ -34,7 +34,7 @@ export default function AdminPage() {
 
         <Link
           href="/admin/leads"
-          className="block rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          className="block cursor-pointer rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
           aria-label="Ir para Leads"
         >
           <h2 className="font-[var(--font-space)] text-xl font-semibold text-white">
@@ -43,6 +43,20 @@ export default function AdminPage() {
 
           <p className="mt-3 text-sm text-zinc-400">
             Visualize os pedidos de orçamento recebidos.
+          </p>
+        </Link>
+
+        <Link
+          href="/saas"
+          className="block cursor-pointer rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-400/30"
+          aria-label="Ir para SaaS"
+        >
+          <h2 className="font-[var(--font-space)] text-xl font-semibold text-white">
+            SaaS
+          </h2>
+
+          <p className="mt-3 text-sm text-zinc-400">
+            Sistema de ticketing e suporte.
           </p>
         </Link>
       </div>

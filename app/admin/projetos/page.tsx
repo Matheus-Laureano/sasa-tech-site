@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, startTransition } from "react";
 import { useRouter } from "next/navigation";
 
 const projects = [
@@ -29,9 +29,12 @@ export default function ProjetosPage() {
   const [loadingHref, setLoadingHref] = useState<string | null>(null);
 
   const handleNavigation = (href: string) => {
-    setLoadingHref(href);
-    router.push(href);
+    startTransition(() => {
+      setLoadingHref(href);
+      router.push(href);
+    });
   };
+
 
   return (
     <div>
@@ -55,7 +58,7 @@ export default function ProjetosPage() {
             key={project.title}
             type="button"
             onClick={() => handleNavigation(project.href)}
-            className="group text-left rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.05]"
+            className="group text-left cursor-pointer rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 transition hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.05]"
           >
             <div className="mb-4 inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">
               {project.status}

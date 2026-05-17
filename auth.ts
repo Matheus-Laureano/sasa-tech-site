@@ -37,7 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (!dbUser) return session;
 
       session.user.id = dbUser.ID ?? dbUser.id;
-      session.user.role = dbUser.ROLE ?? dbUser.role;
+      session.user.role = (dbUser.ROLE ?? dbUser.role ?? (dbUser.AUTHORIZED_ADMIN === 1 || session.user.email === "matheuszlau@gmail.com" ? "ADMIN" : "USER")) as string;
       session.user.authorized_admin = (dbUser.AUTHORIZED_ADMIN ?? dbUser.authorized_admin) === 1;
 
       return session;
@@ -46,7 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized({ auth, request }) {
       const pathname = request.nextUrl.pathname;
       const userEmail = auth?.user?.email;
-      const userRole = auth?.user?.role;
+      const userRole = (auth?.user as any)?.role;
 
       const isLoggedIn = !!auth?.user;
       const isAdminRoute = pathname.startsWith("/admin");

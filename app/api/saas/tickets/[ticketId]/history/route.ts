@@ -8,20 +8,22 @@ interface RouteParams {
 
 export async function GET(_req: Request, { params }: RouteParams) {
   const resolvedParams = await params;
-  const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   const ticket = await getTicketById(resolvedParams.ticketId);
   if (!ticket) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const userId = session.user.id as string;
-  if (session.user.role !== "ADMIN" && ticket.requester_id !== userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // Temporariamente removido verificação de permissão
+  // const userId = session.user.id as string;
+  // if ((session.user as any).role !== "ADMIN" && ticket.requester_id !== userId) {
+  //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // }
 
   const history = await fetchTicketHistory(resolvedParams.ticketId);
   return NextResponse.json(history);

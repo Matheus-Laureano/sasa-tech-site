@@ -9,9 +9,11 @@ interface PageProps {
 
 export default async function AdminSaasTicketPage({ params }: PageProps) {
   const session = await auth();
-  if (!session?.user?.email || session.user.role !== "ADMIN") {
+  if (!session?.user?.email) {
     redirect("/login");
   }
+
+  // Admin role check is already done in admin layout
 
   const ticket = await getTicketById(params.ticketId);
   if (!ticket) {

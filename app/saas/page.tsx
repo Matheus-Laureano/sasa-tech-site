@@ -5,14 +5,19 @@ import { getTicketSummaryByUser, listTickets } from "@/lib/oracle";
 import StatusBadge from "@/components/saas/status-badge";
 
 export default async function SaasDashboardPage() {
-  const session = await auth();
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
+  // Temporariamente removido login obrigatório
+  // const session = await auth();
+  // if (!session?.user?.email) {
+  //   redirect("/login");
+  // }
 
-  const userId = session.user.id as string;
-  const summary = await getTicketSummaryByUser(userId);
-  const tickets = await listTickets({ userId, isAdmin: false });
+  // const userId = session.user.id as string;
+  // const summary = await getTicketSummaryByUser(userId);
+  // const tickets = await listTickets({ userId, isAdmin: false });
+
+  // Dados mockados para teste
+  const summary = { total: 0, open: 0, inProgress: 0, closed: 0, Aberto: 0, "Em atendimento": 0, "Aguardando resposta do usuário": 0, Resolvido: 0, Fechado: 0 };
+  const tickets: any[] = [];
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">

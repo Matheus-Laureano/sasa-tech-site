@@ -7,9 +7,11 @@ export default async function AdminSaasLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  if (!session?.user?.email || session.user.role !== "ADMIN") {
+  if (!session?.user?.email) {
     redirect("/login");
   }
+
+  // Admin role check is already done in admin layout
 
   return <div className="min-h-screen bg-zinc-950 text-zinc-100">{children}</div>;
 }
