@@ -4,19 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
-
-interface Ticket {
-  id: string;
-  title: string;
-  requester_email: string;
-  category: string;
-  priority: string;
-  status: string;
-  created_at: string;
-}
+import type { TicketSummary } from "@/types/ticket";
 
 interface AdminTicketTableProps {
-  tickets: Ticket[];
+  tickets: TicketSummary[];
 }
 
 export default function AdminTicketTable({ tickets }: AdminTicketTableProps) {

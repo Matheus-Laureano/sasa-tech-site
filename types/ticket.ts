@@ -32,6 +32,20 @@ export interface TicketRecord {
   requester_email?: string;
 }
 
+export interface TicketSummary {
+  id: string;
+  title: string;
+  category: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+  created_at: string;
+  updated_at: string;
+  closed_at?: string | null;
+  is_closed: number;
+  requester_name?: string;
+  requester_email?: string;
+}
+
 export interface TicketMessage {
   id: string;
   ticket_id: string;

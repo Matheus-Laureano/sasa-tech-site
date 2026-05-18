@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import oracledb from "oracledb";
 import path from "path";
+import type { TicketSummary } from "@/types/ticket";
 
 oracledb.fetchAsString = [oracledb.CLOB];
 
@@ -786,7 +787,7 @@ export async function listTickets(options: {
   search?: string;
   fromDate?: string;
   toDate?: string;
-} = {}) {
+} = {}): Promise<TicketSummary[]> {
   let connection;
 
   try {
@@ -858,7 +859,7 @@ export async function listTickets(options: {
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
-    return result.rows as Array<Record<string, any>>;
+    return result.rows as TicketSummary[];
   } finally {
     if (connection) await connection.close();
   }

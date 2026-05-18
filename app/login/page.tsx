@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { createUserWithEmailPassword } from "@/lib/oracle";
 import { redirect } from "next/navigation";
 
