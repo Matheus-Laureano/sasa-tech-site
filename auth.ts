@@ -1,12 +1,72 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { findOrCreateUser, getUserByEmail } from "@/lib/oracle";
+import Credentials from "next-auth/providers/credentials";
+import {
+  findOrCreateUser,
+  getUserByEmail,
+  verifyUserByEmailAndPassword,
+  verifyUserByPhoneAndPassword,
+} from "@/lib/oracle";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    Credentials({
+      id: "email-password",
+      name: "Email + Senha",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Senha", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials.password) return null;
+
+        const user = await verifyUserByEmailAndPassword(
+          credentials.email.toString(),
+          credentials.password.toString()
+        );
+
+        if (!user) return null;
+
+        return {
+          id: user.ID,
+          name: user.NAME,
+          email: user.EMAIL,
+          image: user.IMAGE,
+          role: user.ROLE,
+          authorized_admin: user.AUTHORIZED_ADMIN === 1,
+        };
+      },
+    }),
+    Credentials({
+      id: "phone-password",
+      name: "Telefone + Senha",
+      credentials: {
+        phone: { label: "Telefone", type: "text" },
+        password: { label: "Senha", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.phone || !credentials.password) return null;
+
+        const user = await verifyUserByPhoneAndPassword(
+          credentials.phone.toString(),
+          credentials.password.toString()
+        );
+
+        if (!user) return null;
+
+        return {
+          id: user.ID,
+          name: user.NAME,
+          email: user.EMAIL,
+          image: user.IMAGE,
+          role: user.ROLE,
+          authorized_admin: user.AUTHORIZED_ADMIN === 1,
+        };
+      },
     }),
   ],
   pages: {

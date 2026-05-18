@@ -1,12 +1,9 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { useSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import {
   AtSign,
   ArrowUp,
-  Calendar,
   CheckCircle2,
   Cpu,
   HardDrive,
@@ -21,8 +18,7 @@ import {
 import Image from "next/image";
 
 export default function SasaTechHomepage() {
-  const { data: session } = useSession();
-  const router = useRouter();
+  
   const services = [
     {
       title: "Formatação",
@@ -149,14 +145,6 @@ export default function SasaTechHomepage() {
     // Abrir WhatsApp
     window.open(whatsappHref, "_blank", "noopener,noreferrer");
     setIsQuoteOpen(false);
-  }
-
-  function handleAgendaClick() {
-    if (session) {
-      router.push("/agenda");
-    } else {
-      signIn("google");
-    }
   }
 
   useEffect(() => {
@@ -411,15 +399,6 @@ export default function SasaTechHomepage() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleAgendaClick}
-              className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-xs font-medium text-emerald-300 transition hover:bg-emerald-400/20 md:px-4 md:text-sm"
-            >
-              <Calendar className="h-4 w-4" />
-              Agenda
-            </button>
-
             <button
               type="button"
               onClick={() => setIsQuoteOpen(true)}

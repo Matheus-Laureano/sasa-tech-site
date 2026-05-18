@@ -38,11 +38,10 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  // Temporariamente removido login obrigatório
-  // const session = await auth();
-  // if (!session?.user?.email) {
-  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  // }
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const body = await req.json();
   const title = String(body.title || "").trim();
@@ -57,9 +56,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Título e descrição são obrigatórios." }, { status: 400 });
   }
 
+  const userId = String(session.user.id ?? "");
   const ticket = await createTicket(
     { title, description, category, priority, equipment, location, contact_phone },
-    "mock-user-id" // Temporário para teste sem autenticação
+    userId
   );
 
   return NextResponse.json(ticket, { status: 201 });

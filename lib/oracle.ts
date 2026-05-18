@@ -226,7 +226,10 @@ async function tableExists(connection: oracledb.Connection, tableName: string) {
 }
 
 async function ensureUsersTable(connection: oracledb.Connection) {
-  if (await tableExists(connection, USERS_TABLE)) return;
+  if (await tableExists(connection, USERS_TABLE)) {
+    await ensureUserAuthColumns(connection);
+    return;
+  }
 
   await connection.execute(`
     CREATE TABLE ${USERS_TABLE} (
@@ -236,10 +239,36 @@ async function ensureUsersTable(connection: oracledb.Connection) {
       IMAGE VARCHAR2(512),
       ROLE VARCHAR2(50) DEFAULT 'USER',
       AUTHORIZED_ADMIN NUMBER(1) DEFAULT 0,
+      PASSWORD_HASH VARCHAR2(512),
+      PHONE_NUMBER VARCHAR2(100),
       CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       LAST_LOGIN_AT TIMESTAMP
     )
   `);
+}
+
+async function ensureUserAuthColumns(connection: oracledb.Connection) {
+  const result = await connection.execute(
+    `
+      SELECT COLUMN_NAME
+      FROM user_tab_columns
+      WHERE table_name = :tableName
+    `,
+    { tableName: USERS_TABLE },
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  const existingColumns = new Set(
+    (result.rows as Array<Record<string, any>>).map((row) => String(row.COLUMN_NAME).toUpperCase())
+  );
+
+  if (!existingColumns.has("PASSWORD_HASH")) {
+    await connection.execute(`ALTER TABLE ${USERS_TABLE} ADD (PASSWORD_HASH VARCHAR2(512))`);
+  }
+
+  if (!existingColumns.has("PHONE_NUMBER")) {
+    await connection.execute(`ALTER TABLE ${USERS_TABLE} ADD (PHONE_NUMBER VARCHAR2(100))`);
+  }
 }
 
 async function ensureTicketsTable(connection: oracledb.Connection) {
@@ -463,6 +492,183 @@ export async function getUserById(id: string) {
       WHERE ID = :id
       `,
       { id },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    return (result.rows as Array<Record<string, any>>)[0] || null;
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+function hashPassword(password: string) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.pbkdf2Sync(password, salt, 310000, 32, "sha256").toString("hex");
+  return `pbkdf2_sha256$310000$${salt}$${hash}`;
+}
+
+function verifyPassword(password: string, storedHash: string) {
+  const [algo, iterations, salt, hash] = storedHash.split("$");
+  if (algo !== "pbkdf2_sha256" || !iterations || !salt || !hash) return false;
+  const derived = crypto.pbkdf2Sync(password, salt, Number(iterations), 32, "sha256").toString("hex");
+  return derived === hash;
+}
+
+export async function createUserWithEmailPassword({
+  email,
+  name,
+  password,
+  phoneNumber,
+  role = "USER",
+  authorizedAdmin = 0,
+}: {
+  email: string;
+  name: string;
+  password: string;
+  phoneNumber?: string;
+  role?: string;
+  authorizedAdmin?: number;
+}) {
+  let connection;
+
+  try {
+    connection = await getConnection();
+    await ensureSaasTables(connection);
+
+    const existing = await connection.execute(
+      `
+      SELECT ID, PASSWORD_HASH
+      FROM ${USERS_TABLE}
+      WHERE EMAIL = :email
+      `,
+      { email },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const rows = existing.rows as Array<Record<string, any>>;
+    const passwordHash = hashPassword(password);
+
+    if (rows?.[0]) {
+      const user = rows[0];
+      if (user.PASSWORD_HASH) {
+        throw new Error("Email already registered");
+      }
+
+      await connection.execute(
+        `
+        UPDATE ${USERS_TABLE}
+        SET NAME = :name,
+            PASSWORD_HASH = :passwordHash,
+            PHONE_NUMBER = :phoneNumber,
+            LAST_LOGIN_AT = CURRENT_TIMESTAMP
+        WHERE ID = :id
+        `,
+        {
+          name,
+          passwordHash,
+          phoneNumber: phoneNumber || null,
+          id: user.ID,
+        },
+        { autoCommit: true }
+      );
+
+      return { id: user.ID, email, name, role, phone_number: phoneNumber || null };
+    }
+
+    const id = crypto.randomUUID();
+    await connection.execute(
+      `
+      INSERT INTO ${USERS_TABLE}
+        (ID, EMAIL, NAME, IMAGE, ROLE, AUTHORIZED_ADMIN, PASSWORD_HASH, PHONE_NUMBER, LAST_LOGIN_AT)
+      VALUES
+        (:id, :email, :name, NULL, :role, :authorizedAdmin, :passwordHash, :phoneNumber, CURRENT_TIMESTAMP)
+      `,
+      {
+        id,
+        email,
+        name,
+        role,
+        authorizedAdmin,
+        passwordHash,
+        phoneNumber: phoneNumber || null,
+      },
+      { autoCommit: true }
+    );
+
+    return { id, email, name, role, phone_number: phoneNumber || null };
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+export async function verifyUserByEmailAndPassword(email: string, password: string) {
+  let connection;
+
+  try {
+    connection = await getConnection();
+    await ensureSaasTables(connection);
+
+    const result = await connection.execute(
+      `
+      SELECT ID, EMAIL, NAME, IMAGE, ROLE, AUTHORIZED_ADMIN, PASSWORD_HASH
+      FROM ${USERS_TABLE}
+      WHERE EMAIL = :email
+      `,
+      { email },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const user = (result.rows as Array<Record<string, any>>)[0];
+    if (!user?.PASSWORD_HASH) return null;
+    if (!verifyPassword(password, user.PASSWORD_HASH)) return null;
+
+    return user;
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+export async function verifyUserByPhoneAndPassword(phoneNumber: string, password: string) {
+  let connection;
+
+  try {
+    connection = await getConnection();
+    await ensureSaasTables(connection);
+
+    const result = await connection.execute(
+      `
+      SELECT ID, EMAIL, NAME, IMAGE, ROLE, AUTHORIZED_ADMIN, PASSWORD_HASH
+      FROM ${USERS_TABLE}
+      WHERE PHONE_NUMBER = :phoneNumber
+      `,
+      { phoneNumber },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const user = (result.rows as Array<Record<string, any>>)[0];
+    if (!user?.PASSWORD_HASH) return null;
+    if (!verifyPassword(password, user.PASSWORD_HASH)) return null;
+
+    return user;
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+export async function getUserByPhoneNumber(phoneNumber: string) {
+  let connection;
+
+  try {
+    connection = await getConnection();
+    await ensureSaasTables(connection);
+
+    const result = await connection.execute(
+      `
+      SELECT ID, EMAIL, NAME, IMAGE, ROLE, AUTHORIZED_ADMIN, CREATED_AT, LAST_LOGIN_AT
+      FROM ${USERS_TABLE}
+      WHERE PHONE_NUMBER = :phoneNumber
+      `,
+      { phoneNumber },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
@@ -924,6 +1130,39 @@ export async function updateTicket(
 
     await Promise.all(changes);
     return await getTicketById(ticketId);
+  } finally {
+    if (connection) await connection.close();
+  }
+}
+
+export async function deleteTicket(ticketId: string, authorId: string, authorName: string) {
+  let connection;
+
+  try {
+    connection = await getConnection();
+    await ensureSaasTables(connection);
+
+    const ticket = await getTicketById(ticketId);
+    if (!ticket) return false;
+
+    await addTicketHistory(ticketId, "EXCLUIR", ticket.status, null, authorId, authorName);
+    await connection.execute(
+      `DELETE FROM ${TICKET_MESSAGES_TABLE} WHERE TICKET_ID = :ticketId`,
+      { ticketId },
+      { autoCommit: true }
+    );
+    await connection.execute(
+      `DELETE FROM ${TICKET_HISTORY_TABLE} WHERE TICKET_ID = :ticketId`,
+      { ticketId },
+      { autoCommit: true }
+    );
+    await connection.execute(
+      `DELETE FROM ${TICKETS_TABLE} WHERE ID = :ticketId`,
+      { ticketId },
+      { autoCommit: true }
+    );
+
+    return true;
   } finally {
     if (connection) await connection.close();
   }

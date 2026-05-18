@@ -9,7 +9,8 @@ export default async function AdminLayout({
 }>) {
   const session = await auth();
 
-  if (!session?.user || session.user.role !== "ADMIN") {
+  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.email === "matheuszlau@gmail.com";
+  if (!session?.user || !isAdmin) {
     redirect("/login");
   }
 
@@ -24,29 +25,6 @@ export default async function AdminLayout({
             <h1 className="font-[var(--font-space)] text-xl font-semibold text-white">
               SASA TECH Admin
             </h1>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-200 transition hover:bg-white/10"
-            >
-              Voltar ao site
-            </Link>
-
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}
-            >
-              <button
-                type="submit"
-                className="cursor-pointer rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:opacity-90"
-              >
-                Sair
-              </button>
-            </form>
           </div>
         </div>
       </header>

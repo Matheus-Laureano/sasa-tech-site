@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { listTickets } from "@/lib/oracle";
-import StatusBadge from "@/components/saas/status-badge";
+import AdminTicketTable from "@/components/saas/admin-ticket-table";
 
 export default async function AdminSaasTicketsPage() {
   const session = await auth();
@@ -27,35 +27,7 @@ export default async function AdminSaasTicketsPage() {
         </Link>
       </div>
 
-      <div className="overflow-x-auto rounded-3xl border border-white/10 bg-white/5 shadow-[0_0_35px_rgba(0,0,0,0.15)]">
-        <table className="min-w-full divide-y divide-white/10 text-left text-sm text-zinc-300">
-          <thead className="border-b border-white/10 bg-zinc-950/80 text-zinc-400">
-            <tr>
-              <th className="px-5 py-4">ID</th>
-              <th className="px-5 py-4">Título</th>
-              <th className="px-5 py-4">Solicitante</th>
-              <th className="px-5 py-4">Prioridade</th>
-              <th className="px-5 py-4">Status</th>
-              <th className="px-5 py-4">Criado em</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/10">
-            {tickets.map((ticket) => (
-              <tr
-                key={ticket.id}
-                className="transition hover:bg-white/5"
-              >
-                <td className="px-5 py-4 font-medium text-white">{ticket.id.slice(0, 8)}</td>
-                <td className="px-5 py-4">{ticket.title}</td>
-                <td className="px-5 py-4">{ticket.requester_email}</td>
-                <td className="px-5 py-4">{ticket.priority}</td>
-                <td className="px-5 py-4"><StatusBadge status={ticket.status} /></td>
-                <td className="px-5 py-4">{new Date(ticket.created_at).toLocaleDateString("pt-BR")}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <AdminTicketTable tickets={tickets} />
     </main>
   );
 }

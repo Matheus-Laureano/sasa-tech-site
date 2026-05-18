@@ -1,11 +1,14 @@
-import { signIn, auth } from "@/auth";
+import Link from "next/link";
+import { signIn } from "@/auth";
+import { createUserWithEmailPassword } from "@/lib/oracle";
 import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
   const session = await auth();
 
   if (session?.user) {
-    redirect(session.user.role === "ADMIN" ? "/admin" : "/saas");
+    const isAdmin = session.user.role === "ADMIN" || session.user.email === "matheuszlau@gmail.com";
+    redirect(isAdmin ? "/admin" : "/dashboard");
   }
 
   return (
@@ -27,7 +30,7 @@ export default async function LoginPage() {
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/saas" });
+              await signIn("google", { callbackUrl: "/dashboard" });
             }}
           >
             <button

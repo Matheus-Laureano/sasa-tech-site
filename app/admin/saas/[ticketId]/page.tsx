@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { fetchTicketHistory, fetchTicketMessages, getTicketById } from "@/lib/oracle";
 import StatusBadge from "@/components/saas/status-badge";
+import AdminTicketActions from "@/components/saas/admin-ticket-actions";
 
 interface PageProps {
   params: { ticketId: string };
@@ -84,8 +85,10 @@ export default async function AdminSaasTicketPage({ params }: PageProps) {
           </div>
         </div>
 
-        <aside className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_0_35px_rgba(0,0,0,0.15)]">
-          <div>
+        <aside className="space-y-6">
+          <AdminTicketActions ticketId={ticket.id} initialStatus={ticket.status} initialPriority={ticket.priority} />
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_0_35px_rgba(0,0,0,0.15)]">
             <h2 className="text-lg font-semibold text-white">Histórico de ações</h2>
             <div className="mt-4 space-y-3">
               {history.length === 0 ? (
@@ -94,7 +97,7 @@ export default async function AdminSaasTicketPage({ params }: PageProps) {
                 history.map((entry) => (
                   <div key={entry.id} className="rounded-3xl border border-white/10 bg-zinc-950/80 p-4">
                     <p className="text-sm font-semibold text-white">{entry.action_type}</p>
-                    <p className="mt-1 text-xs text-zinc-500">{entry.author_name || "Sistema"} • {new Date(entry.created_at).toLocaleString("pt-BR")}</p>
+                    <p className="mt-1 text-xs text-zinc-500">{entry.author_name || "Sistema"} • {new Date(entry.created_at).toLocaleDateString("pt-BR")}</p>
                     {entry.new_value && <p className="mt-2 text-sm leading-6 text-zinc-300">{entry.new_value}</p>}
                   </div>
                 ))
